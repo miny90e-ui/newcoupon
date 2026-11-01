@@ -15,7 +15,8 @@ export const MIME_BY_EXT = Object.fromEntries(Object.entries(ALLOWED).map(([m, e
 const MAX_BYTES = 4 * 1024 * 1024;
 
 export function uploadDir() {
-  return path.resolve(process.env.UPLOAD_DIR || "./uploads");
+  // turbopackIgnore stops the bundler from tracing the whole project for this runtime path.
+  return path.resolve(/* turbopackIgnore: true */ process.env.UPLOAD_DIR || "./uploads");
 }
 
 /**
