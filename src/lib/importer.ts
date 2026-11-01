@@ -1,10 +1,10 @@
-import "server-only";
 import readXlsxFile from "read-excel-file/node";
 import { z } from "zod";
 import { db } from "./db";
 import { slugify } from "./utils";
 
-// Shared by the admin upload (CSV / Excel) and the Google Sheet sync.
+// Shared by the admin upload (CSV / Excel), the Google Sheet sync and the deploy seed (prisma/seed.ts),
+// so it must not import "server-only".
 
 const url = z.url({ protocol: /^https?$/ });
 

@@ -1,7 +1,27 @@
-import { PrismaClient, CouponType } from "@prisma/client";
+import { CouponType } from "@prisma/client";
+import { existsSync, readFileSync } from "node:fs";
 import bcrypt from "bcryptjs";
 
-const prisma = new PrismaClient();
+import { db as prisma } from "../src/lib/db";
+import { importXlsx } from "../src/lib/importer";
+
+const DATA_FILE = "data/du-an.xlsx";
+
+/**
+ * Imports data/du-an.xlsx (same one-tab format as the Google Sheet) on each deploy,
+ * until the Google Sheet has synced successfully — after that the sheet is the source of truth.
+ */
+async function importDataFile() {
+  if (!existsSync(DATA_FILE)) return;
+  const last = await prisma.setting.findUnique({ where: { key: "google_sheet_last_sync" } });
+  if (last && (JSON.parse(last.value) as { ok?: boolean }).ok) {
+    console.log(`Google Sheet is syncing — skipping ${DATA_FILE}.`);
+    return;
+  }
+  const { stores, coupons } = await importXlsx(readFileSync(DATA_FILE));
+  console.log(`${DATA_FILE}: ${stores.msg} ${coupons.msg}`);
+  for (const e of [...stores.errors, ...coupons.errors]) console.warn(`  ${e}`);
+}
 
 const categories = [
   { name: "Fashion", slug: "fashion", icon: "shirt", description: "Clothing, shoes and accessories." },
@@ -88,6 +108,8 @@ async function main() {
     });
   }
   console.log(`Categories: ${categories.length}`);
+
+  await importDataFile();
 
   if (process.env.SEED_SAMPLE?.trim() !== "true") {
     console.log("SEED_SAMPLE is not true — skipping sample stores.");
