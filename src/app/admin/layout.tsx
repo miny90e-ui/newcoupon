@@ -11,7 +11,7 @@ const NAV = [
   { href: "/admin/coupons", label: "Coupons", icon: Ticket },
   { href: "/admin/categories", label: "Categories", icon: FolderTree },
   { href: "/admin/banners", label: "Homepage banners", icon: Images },
-  { href: "/admin/import", label: "CSV import", icon: Upload },
+  { href: "/admin/import", label: "Import (Excel / CSV)", icon: Upload },
   { href: "/admin/users", label: "Users", icon: Users },
 ];
 
