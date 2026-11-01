@@ -9,7 +9,7 @@ export function StoreTile({ store }: { store: { name: string; slug: string; logo
     >
       <StoreLogo name={store.name} logoUrl={store.logoUrl} className="size-16 text-lg" />
       <span className="text-sm font-semibold text-ink">{store.name}</span>
-      {store._count && <span className="-mt-2 text-xs text-muted">{store._count.coupons} offers</span>}
+      {store._count && <span className="-mt-2 text-xs text-muted">{store._count.coupons} {store._count.coupons === 1 ? "offer" : "offers"}</span>}
     </Link>
   );
 }
