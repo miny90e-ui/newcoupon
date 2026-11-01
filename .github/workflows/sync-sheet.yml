@@ -1,0 +1,19 @@
+name: Sync Google Sheet
+
+# Every 15 minutes, ask the website to pull stores and coupons from the linked Google Sheet,
+# so new rows go live even when nobody is visiting the site.
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Trigger sync
+        run: |
+          curl -sS --max-time 120 \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            "${{ vars.SITE_URL || 'https://newcoupon.vercel.app' }}/api/cron/sync-sheet"

@@ -1,7 +1,9 @@
 import readXlsxFile from "read-excel-file/node";
+import type { Prisma } from "@prisma/client";
 import { z } from "zod";
 import { db } from "./db";
 import { slugify } from "./utils";
+import { guessCategorySlug, storeMeta } from "./store-meta";
 
 // Shared by the admin upload (CSV / Excel), the Google Sheet sync and the deploy seed (prisma/seed.ts),
 // so it must not import "server-only".
@@ -170,8 +172,9 @@ async function applyFlat(rows: Row[]) {
 
   for (const [i, r] of rows.entries()) {
     const line = i + 2;
-    const name = r.store;
-    if (!name) { errors.push(`Dòng ${line}: thiếu tên cửa hàng`); continue; }
+    let name = r.store;
+    if (!name && r.affiliate_url) name = (await storeMeta(r.website || r.affiliate_url))?.name ?? "";
+    if (!name) { errors.push(`Dòng ${line}: thiếu tên cửa hàng (không tự đọc được từ link)`); continue; }
     const key = name.toLowerCase();
     if (!stores.has(key)) {
       if (!r.affiliate_url || !url.safeParse(r.affiliate_url).success) {
@@ -179,22 +182,41 @@ async function applyFlat(rows: Row[]) {
         continue;
       }
       const slug = slugify(name);
-      const cat = r.category
+      let cat = r.category
         ? categories.find((c) => c.slug === slugify(r.category) || c.name.toLowerCase() === r.category.toLowerCase())
         : undefined;
       if (r.category && !cat) errors.push(`Dòng ${line}: không có ngành hàng "${r.category}"`);
+      const existing = await db.store.findUnique({
+        where: { slug },
+        select: { id: true, logoUrl: true, categoryId: true, description: true, website: true },
+      });
       // Only overwrite what the sheet actually fills in, so details set in the admin panel survive.
-      const data = {
+      const data: Prisma.StoreUncheckedUpdateInput & { name: string; affiliateUrl: string } = {
         name,
         affiliateUrl: r.affiliate_url,
         ...(r.website && url.safeParse(r.website).success && { website: r.website }),
         ...(r.logo_url && url.safeParse(r.logo_url).success && { logoUrl: r.logo_url }),
         ...(cat && { categoryId: cat.id }),
       };
-      const existing = await db.store.findUnique({ where: { slug }, select: { id: true } });
+      // Anything still missing (logo, category, description, website) is read from the store's homepage.
+      const needsLogo = !data.logoUrl && !existing?.logoUrl;
+      const needsCategory = !cat && !existing?.categoryId;
+      if (needsLogo || needsCategory || !existing?.description || !(data.website || existing?.website)) {
+        const m = await storeMeta(r.website || r.affiliate_url);
+        if (m) {
+          if (needsLogo && m.logo) data.logoUrl = m.logo;
+          if (needsCategory) {
+            const slugGuess = guessCategorySlug(`${name} ${m.description ?? ""}`);
+            cat = categories.find((c) => c.slug === slugGuess);
+            if (cat) data.categoryId = cat.id;
+          }
+          if (!existing?.description && m.description) data.description = m.description;
+          if (!data.website && !existing?.website) data.website = m.origin;
+        }
+      }
       const store = existing
         ? await db.store.update({ where: { slug }, data })
-        : await db.store.create({ data: { ...data, slug, featured: true } });
+        : await db.store.create({ data: { ...data, slug, featured: true } as Prisma.StoreUncheckedCreateInput });
       if (existing) storesUpdated++; else storesAdded++;
       stores.set(key, { id: store.id, link: r.affiliate_url });
     }
