@@ -1,0 +1,113 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum CouponType {
+  CODE
+  DEAL
+}
+
+model User {
+  id           String        @id @default(cuid())
+  email        String        @unique
+  name         String?
+  passwordHash String
+  role         Role          @default(USER)
+  createdAt    DateTime      @default(now())
+  saved        SavedCoupon[]
+}
+
+model Category {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  description String?
+  /// Lucide icon name, e.g. "shirt", "plane", "laptop"
+  icon        String?
+  sortOrder   Int      @default(0)
+  stores      Store[]
+  createdAt   DateTime @default(now())
+}
+
+model Store {
+  id           String    @id @default(cuid())
+  name         String
+  slug         String    @unique
+  website      String?
+  affiliateUrl String
+  logoUrl      String?
+  description  String?
+  featured     Boolean   @default(false)
+  categoryId   String?
+  category     Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  coupons      Coupon[]
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@index([categoryId])
+}
+
+model Coupon {
+  id            String        @id @default(cuid())
+  storeId       String
+  store         Store         @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  type          CouponType    @default(CODE)
+  title         String
+  description   String?
+  /// The promo code. Empty for DEAL-type offers.
+  code          String?
+  /// Short label shown on the card, e.g. "20% OFF", "$10 OFF", "FREE SHIP"
+  discountLabel String?
+  /// Ribbon on the card, e.g. "SITEWIDE", "ONLINE ONLY", "NEW CUSTOMERS"
+  tag           String?
+  /// Overrides the store's affiliate URL for this offer
+  affiliateUrl  String?
+  featured      Boolean       @default(false)
+  exclusive     Boolean       @default(false)
+  verified      Boolean       @default(true)
+  active        Boolean       @default(true)
+  startsAt      DateTime?
+  expiresAt     DateTime?
+  clicks        Int           @default(0)
+  saved         SavedCoupon[]
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@index([storeId])
+  @@index([featured, active])
+}
+
+model SavedCoupon {
+  userId    String
+  couponId  String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  coupon    Coupon   @relation(fields: [couponId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@id([userId, couponId])
+}
+
+/// Homepage hero carousel slides
+model Banner {
+  id        String   @id @default(cuid())
+  title     String
+  subtitle  String?
+  ctaLabel  String?  @default("Shop now")
+  linkUrl   String
+  imageUrl  String?
+  /// Background colour used when there is no image
+  bgColor   String?  @default("#0B2545")
+  sortOrder Int      @default(0)
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+}

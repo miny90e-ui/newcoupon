@@ -1,0 +1,2 @@
+name,slug,affiliate_url,website,logo_url,category,description,featured
+Example Store,example-store,https://www.example.com/?aff=YOURID,https://www.example.com,https://www.example.com/logo.png,Fashion,"Short description of the store.",yes

@@ -1,0 +1,3 @@
+store,title,code,discount,tag,expires_at,affiliate_url,description,featured,exclusive
+Example Store,Extra 20% off your entire order,SAVE20,20% OFF,SITEWIDE,2026-12-31,,"Excludes gift cards.",yes,no
+Example Store,Free shipping on orders over $50,,FREE SHIP,ONLINE ONLY,,,,no,no

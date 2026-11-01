@@ -1,0 +1,98 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, monospace;
+
+  --color-ink: #0b2545;
+  --color-ink-soft: #13315c;
+  --color-brand: #0a7d53;
+  --color-brand-hover: #086644;
+  --color-brand-tint: #e7f5ef;
+  --color-gold: #f2a541;
+  --color-gold-tint: #fdf3e3;
+  --color-canvas: #f6f7f9;
+  --color-surface: #ffffff;
+  --color-line: #e3e7ee;
+  --color-body: #1f2937;
+  --color-muted: #5b6475;
+  --color-danger: #b42318;
+
+  --radius-card: 14px;
+  --shadow-card: 0 1px 2px rgb(11 37 69 / 0.06), 0 2px 8px rgb(11 37 69 / 0.04);
+  --shadow-lift: 0 6px 24px rgb(11 37 69 / 0.12);
+}
+
+@layer base {
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--color-canvas);
+  color: var(--color-body);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-brand);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+h1, h2, h3 {
+  text-wrap: balance;
+  color: var(--color-ink);
+}
+
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@utility container-page {
+  @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
+}
+
+@utility btn {
+  @apply inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-full px-5 text-sm font-semibold transition-colors duration-200 disabled:cursor-not-allowed disabled:opacity-60;
+}
+
+@utility btn-primary {
+  @apply btn bg-brand text-white hover:bg-brand-hover;
+}
+
+@utility btn-ink {
+  @apply btn bg-ink text-white hover:bg-ink-soft;
+}
+
+@utility btn-outline {
+  @apply btn border border-line bg-surface text-ink hover:border-ink;
+}
+
+@utility card {
+  @apply rounded-[var(--radius-card)] border border-line bg-surface shadow-[var(--shadow-card)];
+}
+
+@utility input {
+  @apply min-h-11 w-full rounded-lg border border-line bg-surface px-3 text-base text-body placeholder:text-muted/80 focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20;
+}
+
+@utility label {
+  @apply mb-1.5 block text-sm font-medium text-ink;
+}
+
+@utility section-title {
+  @apply text-xl font-bold tracking-tight sm:text-2xl;
+}
+
+@utility link {
+  @apply font-medium text-brand underline underline-offset-4 hover:text-brand-hover;
+}

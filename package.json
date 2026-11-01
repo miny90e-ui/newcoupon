@@ -1,0 +1,55 @@
+{
+  "name": "new-coupon",
+  "version": "1.0.0",
+  "private": true,
+  "description": "New Coupon — coupons and deals from stores across every category.",
+  "engines": {
+    "node": ">=20.9"
+  },
+  "scripts": {
+    "dev": "next dev",
+    "build": "prisma generate && next build",
+    "start": "next start -p ${PORT:-3000}",
+    "typecheck": "tsc --noEmit",
+    "db:local": "node scripts/dev-db.mjs",
+    "db:migrate": "prisma migrate deploy",
+    "db:migrate:dev": "prisma migrate dev",
+    "db:seed": "prisma db seed",
+    "postinstall": "prisma generate"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  },
+  "dependencies": {
+    "@prisma/client": "6.19.3",
+    "bcryptjs": "3.0.3",
+    "clsx": "2.1.1",
+    "jose": "6.2.14",
+    "lucide-react": "1.66.0",
+    "next": "16.4.3",
+    "papaparse": "5.7.0",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "server-only": "^0.0.1",
+    "zod": "4.6.7"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "4.3.3",
+    "@types/node": "24.19.2",
+    "@types/papaparse": "5.5.2",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "embedded-postgres": "17.11.0-beta.19",
+    "prisma": "6.19.3",
+    "tailwindcss": "4.3.3",
+    "tsx": "4.23.15",
+    "typescript": "5.9.3"
+  },
+  "allowScripts": {
+    "esbuild@0.28.2": true,
+    "prisma@6.19.3": true,
+    "@embedded-postgres/darwin-arm64@17.11.0-beta.19": true,
+    "@prisma/client@6.19.3": true,
+    "@prisma/engines@6.19.3": true
+  }
+}
