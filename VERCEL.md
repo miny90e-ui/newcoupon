@@ -78,7 +78,7 @@ Vào `https://<địa-chỉ-website>/admin` và đăng nhập bằng `ADMIN_EMAI
 
 - **Mỗi lần push code lên GitHub nhánh `main`, Vercel tự build và cập nhật website**, không cần làm gì thêm.
 - **Gắn tên miền riêng:** vào **Settings → Domains**, thêm tên miền và làm theo hướng dẫn trỏ DNS của Vercel. Xong thì đổi `SITE_URL` thành tên miền mới và Redeploy.
-- **Đổi mật khẩu admin:** sửa `ADMIN_PASSWORD` rồi Redeploy **không** đổi được mật khẩu của tài khoản đã tồn tại. Muốn đổi, hãy nhờ mình thêm chức năng đổi mật khẩu.
+- **Đổi hoặc quên mật khẩu admin:** sửa `ADMIN_PASSWORD` trong **Settings → Environment Variables** rồi Redeploy. Mỗi lần deploy, tài khoản admin được đặt lại theo `ADMIN_EMAIL` và `ADMIN_PASSWORD`.
 - **Xem lỗi:** tab **Logs** của project trên Vercel.
 
 ## Giới hạn của gói miễn phí

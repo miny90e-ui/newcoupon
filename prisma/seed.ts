@@ -61,23 +61,23 @@ const coupons: SampleCoupon[] = [
 ];
 
 async function main() {
-  const email = process.env.ADMIN_EMAIL;
+  const email = process.env.ADMIN_EMAIL?.trim().toLowerCase();
   const password = process.env.ADMIN_PASSWORD;
   if (email && password) {
     if (password.length < 8 || password === "CHANGE_ME") {
       throw new Error("ADMIN_PASSWORD must be at least 8 characters and not CHANGE_ME");
     }
+    // Re-applying the password on every deploy means changing ADMIN_PASSWORD
+    // (then redeploying) is how you reset the admin login.
+    const passwordHash = await bcrypt.hash(password, 12);
     await prisma.user.upsert({
-      where: { email: email.toLowerCase() },
-      update: { role: "ADMIN" },
-      create: {
-        email: email.toLowerCase(),
-        name: "Admin",
-        role: "ADMIN",
-        passwordHash: await bcrypt.hash(password, 12),
-      },
+      where: { email },
+      update: { role: "ADMIN", passwordHash },
+      create: { email, name: "Admin", role: "ADMIN", passwordHash },
     });
     console.log(`Admin account ready: ${email}`);
+  } else {
+    console.warn("ADMIN_EMAIL / ADMIN_PASSWORD not set — no admin account created.");
   }
 
   for (const [i, c] of categories.entries()) {
@@ -89,7 +89,10 @@ async function main() {
   }
   console.log(`Categories: ${categories.length}`);
 
-  if (process.env.SEED_SAMPLE !== "true") return;
+  if (process.env.SEED_SAMPLE?.trim() !== "true") {
+    console.log("SEED_SAMPLE is not true — skipping sample stores.");
+    return;
+  }
 
   for (const s of stores) {
     const category = await prisma.category.findUnique({ where: { slug: s.cat } });
