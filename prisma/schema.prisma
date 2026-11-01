@@ -114,3 +114,10 @@ model Banner {
   active    Boolean  @default(true)
   createdAt DateTime @default(now())
 }
+
+/// Small key/value store for site settings (e.g. the linked Google Sheet).
+model Setting {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt
+}

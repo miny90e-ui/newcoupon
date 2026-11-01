@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { LayoutDashboard, Store, Ticket, FolderTree, Images, Users, Upload } from "lucide-react";
+import { LayoutDashboard, Store, Ticket, FolderTree, Images, Users, Upload, Sheet } from "lucide-react";
 import { requireAdmin } from "@/lib/session";
 
 export const metadata: Metadata = { title: "Admin", robots: { index: false, follow: false } };
@@ -11,6 +11,7 @@ const NAV = [
   { href: "/admin/coupons", label: "Coupons", icon: Ticket },
   { href: "/admin/categories", label: "Categories", icon: FolderTree },
   { href: "/admin/banners", label: "Homepage banners", icon: Images },
+  { href: "/admin/google-sheet", label: "Google Sheet", icon: Sheet },
   { href: "/admin/import", label: "Import (Excel / CSV)", icon: Upload },
   { href: "/admin/users", label: "Users", icon: Users },
 ];
