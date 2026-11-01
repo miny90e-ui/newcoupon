@@ -93,7 +93,16 @@ async function runSync(): Promise<SyncStatus> {
     }
     const { stores, coupons } = await importXlsx(Buffer.from(await res.arrayBuffer()));
     const errors = [...stores.errors, ...coupons.errors];
-    status = { at: new Date().toISOString(), ok: true, message: `${stores.msg} ${coupons.msg}`, errors: errors.slice(0, 20) };
+    // The sheet is the source of truth: whatever is no longer in it comes off the site.
+    // Coupons are hidden (re-adding the row brings them back); stores are deleted.
+    // Skipped when the sheet yields no stores at all, so an empty/broken export can't wipe the site.
+    let removed = "";
+    if (stores.ids.length > 0) {
+      const hidden = await db.coupon.updateMany({ where: { active: true, id: { notIn: coupons.ids } }, data: { active: false } });
+      const deleted = await db.store.deleteMany({ where: { id: { notIn: stores.ids } } });
+      removed = ` Removed: ${deleted.count} stores, ${hidden.count} coupons.`;
+    }
+    status = { at: new Date().toISOString(), ok: true, message: `${stores.msg} ${coupons.msg}${removed}`, errors: errors.slice(0, 20) };
     try {
       revalidatePath("/", "layout");
     } catch {

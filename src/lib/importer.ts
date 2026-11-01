@@ -10,7 +10,8 @@ import { guessCategorySlug, storeMeta } from "./store-meta";
 
 const url = z.url({ protocol: /^https?$/ });
 
-export type ImportResult = { msg: string; errors: string[] };
+/** ids = every store / coupon the file mentioned (used by the sheet sync to remove the rest). */
+export type ImportResult = { msg: string; errors: string[]; ids: string[] };
 
 export type Row = Record<string, string>;
 
@@ -50,6 +51,7 @@ export async function applyStores(rows: Row[]) {
   const categories = await db.category.findMany();
   const errors: string[] = [];
   let created = 0, updated = 0;
+  const ids: string[] = [];
   for (const [i, r] of rows.entries()) {
     const line = i + 2;
     if (!r.name || !r.affiliate_url) { errors.push(`stores row ${line}: name and affiliate_url are required`); continue; }
@@ -69,10 +71,11 @@ export async function applyStores(rows: Row[]) {
       categoryId: cat?.id ?? null,
     };
     const existing = await db.store.findUnique({ where: { slug }, select: { id: true } });
-    if (existing) { await db.store.update({ where: { slug }, data }); updated++; }
-    else { await db.store.create({ data: { ...data, slug } }); created++; }
+    const saved = existing ? await db.store.update({ where: { slug }, data }) : await db.store.create({ data: { ...data, slug } });
+    if (existing) updated++; else created++;
+    ids.push(saved.id);
   }
-  return { msg: `Stores: ${created} added, ${updated} updated.`, errors };
+  return { msg: `Stores: ${created} added, ${updated} updated.`, errors, ids };
 }
 
 /**
@@ -83,6 +86,7 @@ export async function applyCoupons(rows: Row[]) {
   const stores = await db.store.findMany({ select: { id: true, slug: true, name: true } });
   const errors: string[] = [];
   let created = 0, updated = 0;
+  const ids: string[] = [];
   for (const [i, r] of rows.entries()) {
     const line = i + 2;
     const key = r.store ?? "";
@@ -112,10 +116,11 @@ export async function applyCoupons(rows: Row[]) {
         : { storeId: store.id, type: "DEAL", title: { equals: data.title, mode: "insensitive" } },
       select: { id: true },
     });
-    if (existing) { await db.coupon.update({ where: { id: existing.id }, data }); updated++; }
-    else { await db.coupon.create({ data }); created++; }
+    const saved = existing ? await db.coupon.update({ where: { id: existing.id }, data }) : await db.coupon.create({ data });
+    if (existing) updated++; else created++;
+    ids.push(saved.id);
   }
-  return { msg: `Coupons: ${created} added, ${updated} updated.`, errors };
+  return { msg: `Coupons: ${created} added, ${updated} updated.`, errors, ids };
 }
 
 /* ---------- One-tab format: each row = store + affiliate link (+ optional coupon) ---------- */
@@ -243,7 +248,7 @@ async function applyFlat(rows: Row[]) {
   }
   const coupons = await applyCoupons(couponRows);
   return {
-    stores: { msg: `Stores: ${storesAdded} added, ${storesUpdated} updated.`, errors },
+    stores: { msg: `Stores: ${storesAdded} added, ${storesUpdated} updated.`, errors, ids: [...stores.values()].map((s) => s.id) },
     coupons,
   };
 }
