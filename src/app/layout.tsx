@@ -1,8 +1,10 @@
 import type { Metadata, Viewport } from "next";
+import { after } from "next/server";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { SITE_NAME, siteUrl } from "@/lib/utils";
+import { syncIfStale } from "@/lib/sheet-sync";
 import "./globals.css";
 
 const jakarta = Plus_Jakarta_Sans({
@@ -28,6 +30,8 @@ export const viewport: Viewport = {
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+  // Keeps the site in step with the Google Sheet: after a page is sent, re-sync if the last sync is over 10 minutes old.
+  after(() => syncIfStale().catch((e) => console.error("Sheet sync failed", e)));
   return (
     <html lang="en" className={jakarta.variable}>
       <body className="flex min-h-dvh flex-col">

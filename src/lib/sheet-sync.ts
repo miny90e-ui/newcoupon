@@ -1,10 +1,13 @@
 import "server-only";
 import { revalidatePath } from "next/cache";
 import { db } from "./db";
+import { GOOGLE_SHEET_URL } from "@/config/site";
 import { importXlsx } from "./importer";
 
 const URL_KEY = "google_sheet_url";
 const STATUS_KEY = "google_sheet_last_sync";
+const LOCK_KEY = "google_sheet_lock";
+const LOCK_MAX_AGE_MS = 3 * 60_000;
 
 export type SyncStatus = { at: string; ok: boolean; message: string; errors: string[] };
 
@@ -13,7 +16,8 @@ export function sheetIdFromUrl(url: string) {
 }
 
 export async function getSheetUrl() {
-  return (await db.setting.findUnique({ where: { key: URL_KEY } }))?.value ?? null;
+  const saved = (await db.setting.findUnique({ where: { key: URL_KEY } }))?.value;
+  return saved || process.env.GOOGLE_SHEET_URL || GOOGLE_SHEET_URL || null;
 }
 
 export async function setSheetUrl(url: string | null) {
@@ -38,6 +42,40 @@ export async function getLastSync(): Promise<SyncStatus | null> {
  * The sheet must be shared as "Anyone with the link can view".
  */
 export async function syncFromSheet(): Promise<SyncStatus> {
+  // Only one sync at a time, so two at once can't both create the same new coupon.
+  if (!(await acquireLock())) {
+    return (await getLastSync()) ?? { at: new Date().toISOString(), ok: false, message: "A sync is already running.", errors: [] };
+  }
+  try {
+    return await runSync();
+  } finally {
+    await db.setting.deleteMany({ where: { key: LOCK_KEY } });
+  }
+}
+
+/** Syncs in the background when the last sync is older than maxAgeMs. Called after page responses. */
+export async function syncIfStale(maxAgeMs = 10 * 60_000) {
+  if (!(await getSheetUrl())) return;
+  const last = await getLastSync();
+  if (last && Date.now() - new Date(last.at).getTime() < maxAgeMs) return;
+  await syncFromSheet();
+}
+
+async function acquireLock(): Promise<boolean> {
+  try {
+    await db.setting.create({ data: { key: LOCK_KEY, value: new Date().toISOString() } });
+    return true;
+  } catch {
+    const lock = await db.setting.findUnique({ where: { key: LOCK_KEY } });
+    if (lock && Date.now() - lock.updatedAt.getTime() > LOCK_MAX_AGE_MS) {
+      await db.setting.deleteMany({ where: { key: LOCK_KEY, updatedAt: lock.updatedAt } });
+      return acquireLock();
+    }
+    return false;
+  }
+}
+
+async function runSync(): Promise<SyncStatus> {
   let status: SyncStatus;
   try {
     const url = await getSheetUrl();
@@ -56,7 +94,11 @@ export async function syncFromSheet(): Promise<SyncStatus> {
     const { stores, coupons } = await importXlsx(Buffer.from(await res.arrayBuffer()));
     const errors = [...stores.errors, ...coupons.errors];
     status = { at: new Date().toISOString(), ok: true, message: `${stores.msg} ${coupons.msg}`, errors: errors.slice(0, 20) };
-    revalidatePath("/", "layout");
+    try {
+      revalidatePath("/", "layout");
+    } catch {
+      // Not allowed in every context (e.g. after a page render); pages are dynamic anyway.
+    }
   } catch (e) {
     status = { at: new Date().toISOString(), ok: false, message: e instanceof Error ? e.message : "Sync failed.", errors: [] };
   }
