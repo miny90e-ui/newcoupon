@@ -116,14 +116,133 @@ export async function applyCoupons(rows: Row[]) {
   return { msg: `Coupons: ${created} added, ${updated} updated.`, errors };
 }
 
-/** Imports an .xlsx that has a "stores" tab and/or a "coupons" tab (stores first). */
+/* ---------- One-tab format: each row = store + affiliate link (+ optional coupon) ---------- */
+
+// Column headers accepted for the one-tab sheet, compared without accents, case or "(…)" notes.
+const FLAT_COLUMNS: Record<string, string[]> = {
+  store: ["cua hang", "store", "ten cua hang", "thuong hieu", "name"],
+  affiliate_url: ["link affiliate", "link aff", "affiliate link", "affiliate_url", "link"],
+  code: ["ma coupon", "ma giam gia", "coupon", "code", "ma"],
+  title: ["uu dai", "tieu de", "title", "noi dung uu dai"],
+  discount: ["giam", "muc giam", "discount"],
+  expires_at: ["het han", "ngay het han", "expires_at", "expires"],
+  category: ["nganh hang", "category", "danh muc"],
+  logo_url: ["logo", "logo_url", "link logo"],
+  website: ["website", "trang web"],
+  description: ["ghi chu", "dieu kien", "description", "mo ta"],
+  tag: ["nhan", "tag"],
+  featured: ["noi bat", "featured"],
+  exclusive: ["doc quyen", "exclusive"],
+  active: ["hien", "active", "dang chay"],
+};
+
+function headerKey(h: string) {
+  const plain = h
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/đ/gi, "d")
+    .replace(/\(.*?\)|\*/g, "")
+    .toLowerCase()
+    .replace(/\s+/g, " ")
+    .trim();
+  return Object.entries(FLAT_COLUMNS).find(([, names]) => names.includes(plain))?.[0] ?? null;
+}
+
+function flatRows(data: unknown[][]): Row[] {
+  const keys = data[0].map((h) => headerKey(cellText(h)));
+  return normalizeRows(
+    data.slice(1).map((row) => Object.fromEntries(keys.map((k, i) => [k, cellText(row[i])]).filter(([k]) => k)))
+  );
+}
+
+function isFlatSheet(data: unknown[][] | undefined) {
+  if (!data?.length) return false;
+  const keys = new Set(data[0].map((h) => headerKey(cellText(h))));
+  return keys.has("store") && keys.has("affiliate_url");
+}
+
+async function applyFlat(rows: Row[]) {
+  const errors: string[] = [];
+  const categories = await db.category.findMany();
+  const stores = new Map<string, { id: string; link: string }>();
+  let storesAdded = 0, storesUpdated = 0;
+  const couponRows: Row[] = [];
+
+  for (const [i, r] of rows.entries()) {
+    const line = i + 2;
+    const name = r.store;
+    if (!name) { errors.push(`Dòng ${line}: thiếu tên cửa hàng`); continue; }
+    const key = name.toLowerCase();
+    if (!stores.has(key)) {
+      if (!r.affiliate_url || !url.safeParse(r.affiliate_url).success) {
+        errors.push(`Dòng ${line}: link affiliate của "${name}" phải bắt đầu bằng https://`);
+        continue;
+      }
+      const slug = slugify(name);
+      const cat = r.category
+        ? categories.find((c) => c.slug === slugify(r.category) || c.name.toLowerCase() === r.category.toLowerCase())
+        : undefined;
+      if (r.category && !cat) errors.push(`Dòng ${line}: không có ngành hàng "${r.category}"`);
+      // Only overwrite what the sheet actually fills in, so details set in the admin panel survive.
+      const data = {
+        name,
+        affiliateUrl: r.affiliate_url,
+        ...(r.website && url.safeParse(r.website).success && { website: r.website }),
+        ...(r.logo_url && url.safeParse(r.logo_url).success && { logoUrl: r.logo_url }),
+        ...(cat && { categoryId: cat.id }),
+      };
+      const existing = await db.store.findUnique({ where: { slug }, select: { id: true } });
+      const store = existing
+        ? await db.store.update({ where: { slug }, data })
+        : await db.store.create({ data: { ...data, slug, featured: true } });
+      if (existing) storesUpdated++; else storesAdded++;
+      stores.set(key, { id: store.id, link: r.affiliate_url });
+    }
+    const store = stores.get(key)!;
+    if (!r.code && !r.title && !r.discount) continue; // store-only row
+    const code = r.code?.toUpperCase();
+    // "10%" → "10% off", "$5" → "$5 off"; labels like "10% OFF" or "FREE SHIP" are kept as they are.
+    const d = r.discount;
+    const label = !d ? "Save" : /^[\d$€£]/.test(d) && !/off/i.test(d) ? `${d} off` : d;
+    const title = r.title || (code ? `${label} with code ${code}` : `${label} at ${name}`);
+    couponRows.push({
+      store: name,
+      title,
+      code: code ?? "",
+      discount: r.discount ?? "",
+      tag: r.tag ?? "",
+      expires_at: r.expires_at ?? "",
+      affiliate_url: r.affiliate_url && r.affiliate_url !== store.link ? r.affiliate_url : "",
+      description: r.description ?? "",
+      featured: r.featured || "yes",
+      exclusive: r.exclusive || (code ? "yes" : "no"),
+      active: r.active ?? "",
+    });
+  }
+  const coupons = await applyCoupons(couponRows);
+  return {
+    stores: { msg: `Stores: ${storesAdded} added, ${storesUpdated} updated.`, errors },
+    coupons,
+  };
+}
+
+/**
+ * Imports an .xlsx. Either a "stores" tab and/or a "coupons" tab,
+ * or a single tab where each row is a store + affiliate link (+ coupon).
+ */
 export async function importXlsx(buffer: Buffer): Promise<{ stores: ImportResult; coupons: ImportResult }> {
   const sheets = await readXlsxFile(buffer);
   const find = (name: string) => sheets.find((s) => s.sheet.trim().toLowerCase() === name)?.data;
   const storesSheet = find("stores");
   const couponsSheet = find("coupons");
-  if (!storesSheet && !couponsSheet) throw new Error('The spreadsheet needs a tab named "stores" and/or a tab named "coupons".');
-  const stores = await applyStores(sheetRows(storesSheet));
-  const coupons = await applyCoupons(sheetRows(couponsSheet));
-  return { stores, coupons };
+  if (storesSheet || couponsSheet) {
+    const stores = await applyStores(sheetRows(storesSheet));
+    const coupons = await applyCoupons(sheetRows(couponsSheet));
+    return { stores, coupons };
+  }
+  const flat = sheets.find((s) => isFlatSheet(s.data));
+  if (!flat) {
+    throw new Error('Không đọc được sheet: cần một tab có cột "Cửa hàng" và "Link affiliate" (hoặc hai tab "stores" và "coupons").');
+  }
+  return applyFlat(flatRows(flat.data));
 }

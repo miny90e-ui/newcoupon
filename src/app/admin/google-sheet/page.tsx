@@ -64,8 +64,10 @@ export default async function GoogleSheetPage() {
           <li>Copy link trên thanh địa chỉ, dán vào ô ở trên, bấm Link &amp; sync.</li>
         </ol>
         <p className="text-muted">
-          Giữ nguyên tên tab <code className="rounded bg-canvas px-1">stores</code> và <code className="rounded bg-canvas px-1">coupons</code> và dòng tiêu đề.
-          Sheet ở chế độ chỉ xem nên người khác không sửa được, nhưng ai có link đều xem được link affiliate (vốn cũng hiện công khai trên website).
+          Cách đơn giản nhất: một tab, mỗi dòng gồm <b>Cửa hàng</b>, <b>Link affiliate</b>, <b>Mã coupon</b>, <b>Giảm</b>,
+          <b> Ưu đãi</b>, <b>Hết hạn</b>, <b>Ngành hàng</b>, <b>Logo</b>, <b>Ghi chú</b>, <b>Hiện</b>. Hai tab
+          <code className="rounded bg-canvas px-1">stores</code> + <code className="rounded bg-canvas px-1">coupons</code> kiểu cũ vẫn dùng được.
+          Sheet ở chế độ chỉ xem nên người khác không sửa được, nhưng ai có link đều xem được.
         </p>
       </section>
     </div>
