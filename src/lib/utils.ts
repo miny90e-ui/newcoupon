@@ -6,8 +6,11 @@ export function cn(...inputs: ClassValue[]) {
 
 export const SITE_NAME = "New Coupon";
 
+/** Public site address: SITE_URL if set, else Vercel's production domain, else localhost. */
 export function siteUrl(path = "") {
-  return (process.env.SITE_URL ?? "http://localhost:3000").replace(/\/$/, "") + path;
+  const vercel = process.env.VERCEL_PROJECT_PRODUCTION_URL;
+  const base = process.env.SITE_URL || (vercel ? `https://${vercel}` : "http://localhost:3000");
+  return base.replace(/\/$/, "") + path;
 }
 
 export function slugify(input: string) {
