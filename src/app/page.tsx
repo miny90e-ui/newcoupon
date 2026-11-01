@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, BadgeCheck, MousePointerClick, ShieldCheck } from "lucide-react";
+import { BadgeCheck, MousePointerClick, ShieldCheck } from "lucide-react";
 import { db } from "@/lib/db";
 import { couponCardInclude, getSavedIds, liveCouponWhere } from "@/lib/queries";
 import { getSession } from "@/lib/session";
@@ -8,7 +8,7 @@ import { HeroCarousel } from "@/components/hero-carousel";
 import { CouponCard } from "@/components/coupon-card";
 import { CouponReveal } from "@/components/coupon-reveal";
 import { StoreTile } from "@/components/store-tile";
-import { CategoryIcon } from "@/components/category-icon";
+import { CategoryCard } from "@/components/category-card";
 
 export default async function HomePage({ searchParams }: { searchParams: Promise<{ c?: string }> }) {
   const { c } = await searchParams;
@@ -25,7 +25,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
       orderBy: { name: "asc" },
       take: 12,
     }),
-    db.category.findMany({ orderBy: { sortOrder: "asc" }, take: 12 }),
+    db.category.findMany({ orderBy: { sortOrder: "asc" }, take: 12, include: { _count: { select: { stores: true } } } }),
     getSavedIds(session?.userId),
   ]);
 
@@ -94,19 +94,10 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
       {categories.length > 0 && (
         <section className="container-page pt-16" aria-labelledby="cat-title">
           <h2 id="cat-title" className="section-title">Shop by Category</h2>
-          <ul className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+          <ul className="mt-6 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
             {categories.map((cat) => (
               <li key={cat.id}>
-                <Link
-                  href={`/categories/${cat.slug}`}
-                  className="card group flex min-h-16 items-center gap-3 px-4 py-3 transition-colors hover:border-brand"
-                >
-                  <span className="grid size-10 shrink-0 place-items-center rounded-full bg-brand-tint text-brand">
-                    <CategoryIcon name={cat.icon} className="size-5" />
-                  </span>
-                  <span className="flex-1 text-sm font-semibold text-ink">{cat.name}</span>
-                  <ArrowRight className="size-4 text-muted transition-transform group-hover:translate-x-0.5" aria-hidden />
-                </Link>
+                <CategoryCard category={cat} />
               </li>
             ))}
           </ul>
