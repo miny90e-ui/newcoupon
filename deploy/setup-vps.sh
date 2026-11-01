@@ -29,3 +29,4 @@ mkdir -p /var/www/new-coupon-uploads
 echo
 echo "Done. Save this database URL in /var/www/new-coupon/.env:"
 echo "DATABASE_URL=\"postgresql://newcoupon:${DB_PASS}@localhost:5432/newcoupon?schema=public\""
+echo "DATABASE_URL_UNPOOLED=\"postgresql://newcoupon:${DB_PASS}@localhost:5432/newcoupon?schema=public\""

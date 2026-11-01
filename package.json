@@ -2,13 +2,14 @@
   "name": "new-coupon",
   "version": "1.0.0",
   "private": true,
-  "description": "New Coupon — coupons and deals from stores across every category.",
+  "description": "New Coupon \u2014 coupons and deals from stores across every category.",
   "engines": {
     "node": ">=20.9"
   },
   "scripts": {
     "dev": "next dev",
     "build": "prisma generate && next build",
+    "vercel-build": "prisma generate && prisma migrate deploy && tsx prisma/seed.ts && next build",
     "start": "next start -p ${PORT:-3000}",
     "typecheck": "tsc --noEmit",
     "db:local": "node scripts/dev-db.mjs",
@@ -22,6 +23,7 @@
   },
   "dependencies": {
     "@prisma/client": "6.19.3",
+    "@vercel/blob": "^2.8.2",
     "bcryptjs": "3.0.3",
     "clsx": "2.1.1",
     "jose": "6.2.14",

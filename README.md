@@ -36,7 +36,8 @@ Open http://localhost:3000. The admin panel is at http://localhost:3000/admin, u
 
 ## Deploy
 
-See [DEPLOY.md](DEPLOY.md) for step-by-step setup on a Hostinger VPS: Nginx, PM2, HTTPS, and auto-deploy from GitHub Actions.
+- **Free (Vercel + Neon):** see [VERCEL.md](VERCEL.md). No server to manage, and each push to `main` deploys automatically.
+- **VPS (Hostinger or any Ubuntu server):** see [DEPLOY.md](DEPLOY.md) for Nginx, PM2, HTTPS and auto-deploy from GitHub Actions.
 
 ## Project layout
 

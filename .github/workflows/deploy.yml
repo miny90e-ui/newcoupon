@@ -23,9 +23,14 @@ jobs:
       - run: npm run build
         env:
           AUTH_SECRET: ci-build-only-secret-not-used-at-runtime-0000
+          DATABASE_URL: postgresql://ci:ci@localhost:5432/ci
+          DATABASE_URL_UNPOOLED: postgresql://ci:ci@localhost:5432/ci
 
+  # Only runs when the repository variable DEPLOY_VPS is "true" (see DEPLOY.md, step 6).
+  # On Vercel, deploys happen automatically and this job is skipped.
   deploy:
     needs: check
+    if: vars.DEPLOY_VPS == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Run deploy script on the VPS

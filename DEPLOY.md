@@ -67,7 +67,7 @@ cd /var/www/new-coupon && cp .env.example .env && nano .env
 
 | Biến | Giá trị |
 |------|---------|
-| `DATABASE_URL` | dòng mà script ở bước 3 đã in ra |
+| `DATABASE_URL` và `DATABASE_URL_UNPOOLED` | hai dòng mà script ở bước 3 đã in ra (giống nhau) |
 | `SITE_URL` | `https://newcoupon.com` (tên miền thật của bạn, không có `/` ở cuối) |
 | `AUTH_SECRET` | chạy `openssl rand -base64 48` rồi dán kết quả vào |
 | `ADMIN_EMAIL` | email bạn dùng để đăng nhập trang quản trị |
@@ -123,7 +123,9 @@ ssh-keygen -t ed25519 -f ~/.ssh/github_deploy -N "" && cat ~/.ssh/github_deploy.
 | `VPS_SSH_KEY` | toàn bộ nội dung private key vừa in ra, kể cả dòng `-----BEGIN…` và `-----END…` |
 | `VPS_PORT` | `22` (có thể bỏ qua nếu dùng cổng mặc định) |
 
-3. Từ giờ, mỗi lần `git push` lên `main`, GitHub sẽ tự kiểm tra code, build thử, rồi SSH vào VPS để chạy `deploy/deploy.sh` (pull code, cập nhật database, build, khởi động lại). Bạn theo dõi tiến trình ở tab **Actions** của repo.
+3. Vẫn trong **Settings → Secrets and variables → Actions**, chuyển sang tab **Variables** và tạo biến `DEPLOY_VPS` với giá trị `true`. Thiếu biến này thì GitHub chỉ kiểm tra code, không deploy lên VPS.
+
+4. Từ giờ, mỗi lần `git push` lên `main`, GitHub sẽ tự kiểm tra code, build thử, rồi SSH vào VPS để chạy `deploy/deploy.sh` (pull code, cập nhật database, build, khởi động lại). Bạn theo dõi tiến trình ở tab **Actions** của repo.
 
 Muốn deploy bằng tay thì chạy trên VPS:
 
