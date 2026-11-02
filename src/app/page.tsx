@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { BadgeCheck, Gift, MousePointerClick, Percent, ShieldCheck, Tag } from "lucide-react";
 import { db } from "@/lib/db";
-import { couponCardInclude, getSavedIds, liveCouponWhere, storeSummaries, type StoreSummary } from "@/lib/queries";
+import { couponCardInclude, getSavedIds, liveCouponWhere, storeSummaries, topBrands, type StoreSummary } from "@/lib/queries";
 import { getSession } from "@/lib/session";
 import { safeHref } from "@/lib/utils";
 import { HeroCarousel } from "@/components/hero-carousel";
@@ -10,13 +10,15 @@ import { CouponReveal } from "@/components/coupon-reveal";
 import { StoreTile } from "@/components/store-tile";
 import { CategoryCard } from "@/components/category-card";
 import { StoreLogo } from "@/components/store-logo";
+import { BrandCarousel } from "@/components/brand-carousel";
+import { BrandBanner } from "@/components/brand-banner";
 
 export default async function HomePage({ searchParams }: { searchParams: Promise<{ c?: string }> }) {
   const { c } = await searchParams;
   const session = await getSession();
   const live = liveCouponWhere();
 
-  const [banners, featured, latest, stores, categories, saved, summaries] = await Promise.all([
+  const [banners, featured, latest, stores, categories, saved, summaries, brands] = await Promise.all([
     db.banner.findMany({ where: { active: true }, orderBy: { sortOrder: "asc" } }),
     db.coupon.findMany({ where: { ...live, featured: true }, include: couponCardInclude, orderBy: { updatedAt: "desc" }, take: 10 }),
     db.coupon.findMany({ where: live, include: couponCardInclude, orderBy: { createdAt: "desc" }, take: 8 }),
@@ -29,6 +31,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
     db.category.findMany({ orderBy: { sortOrder: "asc" }, take: 12, include: { _count: { select: { stores: true } } } }),
     getSavedIds(session?.userId),
     storeSummaries(),
+    topBrands(5),
   ]);
 
   const slides = banners.map((b) => ({ ...b, href: safeHref(b.linkUrl) }));
@@ -36,18 +39,29 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
 
   return (
     <>
-      <div className="container-page pt-6 sm:pt-8">
-        {slides.length > 0 ? (
-          <HeroCarousel slides={slides} />
-        ) : (
-          <section className="rounded-[24px] bg-brand px-8 py-14 text-white sm:px-14">
-            <h2 className="text-3xl font-extrabold text-white sm:text-5xl">Save on everything you buy</h2>
-            <p className="mt-3 text-white/80">Coupon codes and deals from stores across every category.</p>
-          </section>
-        )}
-      </div>
+      {/* Top brands by coupon use; the admin banners / plain hero only show when no brand has a live offer */}
+      {brands.length > 0 ? (
+        <div className="pt-3 sm:pt-5">
+          <BrandCarousel labels={brands.map((b) => b.name)}>
+            {brands.map((b, i) => (
+              <BrandBanner key={b.slug} brand={b} rank={i + 1} eager={i === 0} />
+            ))}
+          </BrandCarousel>
+        </div>
+      ) : (
+        <div className="container-page pt-6 sm:pt-8">
+          {slides.length > 0 ? (
+            <HeroCarousel slides={slides} />
+          ) : (
+            <section className="rounded-[24px] bg-brand px-8 py-14 text-white sm:px-14">
+              <h2 className="text-3xl font-extrabold text-white sm:text-5xl">Save on everything you buy</h2>
+              <p className="mt-3 text-white/80">Coupon codes and deals from stores across every category.</p>
+            </section>
+          )}
+        </div>
+      )}
 
-      <section className="container-page pt-10 sm:pt-14">
+      <section className="container-page pt-8 sm:pt-10">
         <div className="relative isolate rounded-[28px] bg-brand-tint px-4 py-10 text-center sm:px-10 sm:py-14">
           <div
             aria-hidden
