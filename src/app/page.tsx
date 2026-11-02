@@ -9,7 +9,6 @@ import { CouponCard } from "@/components/coupon-card";
 import { CouponReveal } from "@/components/coupon-reveal";
 import { StoreTile } from "@/components/store-tile";
 import { CategoryCard } from "@/components/category-card";
-import { StoreSearch } from "@/components/store-search";
 import { StoreLogo } from "@/components/store-logo";
 
 export default async function HomePage({ searchParams }: { searchParams: Promise<{ c?: string }> }) {
@@ -34,7 +33,6 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
 
   const slides = banners.map((b) => ({ ...b, href: safeHref(b.linkUrl) }));
   const popular = summaries.filter((s) => s.offers > 0).sort((a, b) => b.offers - a.offers);
-  const examples = [...popular.slice(0, 4).map((s) => s.name), ...categories.slice(0, 3).map((cat) => cat.name)];
 
   return (
     <>
@@ -73,13 +71,8 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
               .
             </span>
           </p>
-          <StoreSearch
-            examples={examples}
-            placeholder="Type a store name, e.g. My Cluck Hut"
-            className="mx-auto mt-7 max-w-2xl"
-          />
           {popular.length > 0 && (
-            <div className="mt-5 flex flex-wrap items-center justify-center gap-2 text-sm">
+            <div className="mt-6 flex flex-wrap items-center justify-center gap-2 text-sm">
               <span className="font-semibold text-muted">Popular:</span>
               {popular.slice(0, 4).map((s) => (
                 <Link

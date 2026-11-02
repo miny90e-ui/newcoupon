@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useId, useMemo, useRef, useState } from "react";
+import { useId, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowRight, Search, X } from "lucide-react";
 import type { StoreSummary } from "@/lib/queries";
@@ -57,52 +57,18 @@ function matchStores(stores: StoreSummary[], query: string): Match[] {
   return found.sort((a, b) => a.rank - b.rank || b.store.offers - a.store.offers || a.store.name.localeCompare(b.store.name));
 }
 
-/** Cycles through example searches like someone typing them. Paused while `on` is false. */
-function useTypewriter(words: string[], on: boolean) {
-  const [text, setText] = useState(words[0] ?? "");
-  const pos = useRef({ w: 0, n: words[0]?.length ?? 0, del: false });
-
-  useEffect(() => {
-    if (!on || words.length < 2 || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    let t: ReturnType<typeof setTimeout>;
-    const tick = () => {
-      const p = pos.current;
-      if (!p.del && p.n >= words[p.w].length) {
-        p.del = true;
-        t = setTimeout(tick, 1800);
-        return;
-      }
-      if (p.del && p.n === 0) {
-        p.del = false;
-        p.w = (p.w + 1) % words.length;
-        t = setTimeout(tick, 250);
-        return;
-      }
-      p.n += p.del ? -1 : 1;
-      setText(words[p.w].slice(0, p.n));
-      t = setTimeout(tick, p.del ? 30 : 70);
-    };
-    t = setTimeout(tick, 600);
-    return () => clearTimeout(t);
-  }, [on, words]);
-
-  return text;
-}
-
 /**
  * Search box that suggests stores as you type (any part of the name, accents ignored).
  * Arrow keys + Enter open a store; Enter with nothing picked runs the normal search.
  */
 export function StoreSearch({
   size = "lg",
-  examples = [],
   placeholder = "Search a store or brand",
   defaultValue = "",
   autoFocus,
   className,
 }: {
   size?: "lg" | "sm";
-  examples?: string[];
   placeholder?: string;
   defaultValue?: string;
   autoFocus?: boolean;
@@ -117,7 +83,6 @@ export function StoreSearch({
   const [value, setValue] = useState(defaultValue);
   const [stores, setStores] = useState<StoreSummary[] | null>(null);
   const [open, setOpen] = useState(false);
-  const [focused, setFocused] = useState(false);
   const [active, setActive] = useState(-1);
 
   const q = value.trim();
@@ -129,9 +94,6 @@ export function StoreSearch({
   const items: Match[] = q ? results : popular.map((store) => ({ store, start: -1, end: -1, rank: 0 }));
   const count = items.length + (q ? 1 : 0);
   const visible = open && count > 0;
-
-  const typing = examples.length > 0 && !value && !focused;
-  const typed = useTypewriter(examples, typing);
 
   function prime() {
     if (!stores) loadStores().then(setStores);
@@ -191,18 +153,16 @@ export function StoreSearch({
             prime();
           }}
           onFocus={() => {
-            setFocused(true);
             setOpen(true);
             prime();
           }}
           onBlur={() => {
-            setFocused(false);
             setOpen(false);
             setActive(-1);
           }}
           onPointerEnter={prime}
           onKeyDown={onKeyDown}
-          placeholder={typing ? "" : placeholder}
+          placeholder={placeholder}
           autoFocus={autoFocus}
           autoComplete="off"
           spellCheck={false}
@@ -217,19 +177,6 @@ export function StoreSearch({
             lg ? "h-12 px-3 text-base" : "h-11 w-full rounded-full pl-10 pr-4 text-[15px]"
           )}
         />
-
-        {typing && (
-          <span
-            aria-hidden
-            className={cn(
-              "pointer-events-none absolute inset-y-0 flex items-center overflow-hidden whitespace-nowrap text-muted",
-              lg ? "left-12 right-16 text-base sm:left-[52px] sm:right-36" : "left-10 right-4 text-[15px]"
-            )}
-          >
-            Try&nbsp;<span className="font-semibold text-ink">{typed}</span>
-            <span className="ml-0.5 inline-block h-5 w-0.5 rounded-full bg-brand motion-safe:animate-[nc-blink_1s_steps(1)_infinite]" />
-          </span>
-        )}
 
         {lg && value && (
           <button
