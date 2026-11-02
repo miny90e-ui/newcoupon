@@ -1,7 +1,7 @@
 "use client";
 
 import { Children, useEffect, useRef, useState } from "react";
-import { ChevronLeft, ChevronRight, Pause, Play } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const INTERVAL_MS = 3000;
@@ -14,7 +14,8 @@ function ring(to: number, from: number, n: number) {
 
 /**
  * Full-width banner row: the current banner in the middle, its neighbours peeking in at the
- * screen edges, sliding on a loop. Peeks are clickable; swipe works on touch screens.
+ * screen edges, sliding on a loop. It holds still while the pointer or keyboard focus is on it.
+ * Peeks are clickable; swipe works on touch screens.
  * With two to four banners the set is repeated so both edges always have a neighbour.
  */
 export function BrandCarousel({ labels, children }: { labels: string[]; children: React.ReactNode }) {
@@ -24,7 +25,8 @@ export function BrandCarousel({ labels, children }: { labels: string[]; children
   const total = n * copies;
 
   const [pos, setPos] = useState({ cur: 0, prev: 0 });
-  const [paused, setPaused] = useState(false);
+  // Stays still for people who ask their device for less motion.
+  const [still, setStill] = useState(false);
   const [hovering, setHovering] = useState(false);
   const swipe = useRef<{ x: number; y: number } | null>(null);
 
@@ -32,14 +34,14 @@ export function BrandCarousel({ labels, children }: { labels: string[]; children
   const step = (dir: 1 | -1) => setPos(({ cur }) => ({ cur: (cur + dir + total) % total, prev: cur }));
 
   useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) setPaused(true);
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) setStill(true);
   }, []);
 
   useEffect(() => {
-    if (paused || hovering || n < 2) return;
+    if (still || hovering || n < 2) return;
     const t = setInterval(() => setPos(({ cur }) => ({ cur: (cur + 1) % total, prev: cur })), INTERVAL_MS);
     return () => clearInterval(t);
-  }, [paused, hovering, n, total]);
+  }, [still, hovering, n, total]);
 
   if (n === 0) return null;
   const shift = ring(pos.cur, pos.prev, total);
@@ -132,14 +134,6 @@ export function BrandCarousel({ labels, children }: { labels: string[]; children
             className="grid size-11 cursor-pointer place-items-center rounded-full text-muted transition-colors hover:text-ink"
           >
             <ChevronRight className="size-5" aria-hidden />
-          </button>
-          <button
-            type="button"
-            onClick={() => setPaused((p) => !p)}
-            aria-label={paused ? "Play banners" : "Pause banners"}
-            className="grid size-11 cursor-pointer place-items-center rounded-full text-muted transition-colors hover:text-ink"
-          >
-            {paused ? <Play className="size-4" aria-hidden /> : <Pause className="size-4" aria-hidden />}
           </button>
         </div>
       )}

@@ -44,7 +44,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
         <div className="pt-3 sm:pt-5">
           <BrandCarousel labels={brands.map((b) => b.name)}>
             {brands.map((b, i) => (
-              <BrandBanner key={b.slug} brand={b} rank={i + 1} eager={i === 0} />
+              <BrandBanner key={b.slug} brand={b} rank={i + 1} eager={i < 2} />
             ))}
           </BrandCarousel>
         </div>

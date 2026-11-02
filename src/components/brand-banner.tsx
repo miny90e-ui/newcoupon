@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { BadgeCheck, Flame } from "lucide-react";
+import { BRAND_SHOWCASE, type Showcase } from "@/config/brand-showcase";
 import type { TopBrand } from "@/lib/queries";
 import { cn } from "@/lib/utils";
 import { RevealTrigger } from "./reveal-trigger";
@@ -14,6 +15,7 @@ export function BrandBanner({ brand, rank, eager }: { brand: TopBrand; rank: num
   const isCode = coupon.type === "CODE";
   const slug = brand.category?.slug;
   const photo = `/banners/${slug && PHOTOS.has(slug) ? slug : "shopping"}.webp`;
+  const showcase = BRAND_SHOWCASE[brand.slug];
   const headline = coupon.discountLabel ?? (isCode ? "Promo code" : "Special deal");
 
   return (
@@ -21,22 +23,43 @@ export function BrandBanner({ brand, rank, eager }: { brand: TopBrand; rank: num
       <div className="relative overflow-hidden">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src={photo}
+          src={showcase?.backdrop ?? photo}
           alt=""
           width={1120}
           height={720}
           loading={eager ? "eager" : "lazy"}
-          className="size-full object-cover transition-transform duration-[3600ms] ease-out motion-safe:group-data-[current=true]:scale-110"
+          className={cn(
+            "size-full object-cover transition-transform duration-[3600ms] ease-out motion-safe:group-data-[current=true]:scale-110",
+            showcase && "blur-[2px]"
+          )}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-ink/45 via-transparent to-transparent" />
+        <div
+          className={cn(
+            "absolute inset-0 bg-gradient-to-t",
+            showcase ? "from-ink/70 via-ink/30 to-ink/10" : "from-ink/45 via-transparent to-transparent"
+          )}
+        />
+        {showcase && <ProductFan showcase={showcase} eager={eager} />}
         <span className="absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1.5 text-xs font-bold text-ink shadow sm:left-5 sm:top-5">
           <Flame className="size-3.5 text-brand" aria-hidden />#{rank} top brand
           {brand.uses > 0 && <span className="font-medium text-muted">· {brand.uses.toLocaleString("en-US")} uses</span>}
         </span>
-        {brand.category && (
-          <span className="absolute bottom-3 left-4 hidden text-sm font-semibold text-white sm:bottom-5 sm:left-6 sm:block">
-            {brand.category.name}
+        {showcase ? (
+          <span className="absolute bottom-5 left-5 hidden items-center gap-2 rounded-full bg-white py-1 pl-1 pr-3.5 text-sm font-bold text-ink shadow-lg sm:inline-flex">
+            {brand.logoUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={brand.logoUrl} alt="" className="size-8 rounded-full object-contain" />
+            ) : (
+              <StoreLogo name={brand.name} className="size-8 rounded-full text-[10px]" />
+            )}
+            {brand.name}
           </span>
+        ) : (
+          brand.category && (
+            <span className="absolute bottom-3 left-4 hidden text-sm font-semibold text-white sm:bottom-5 sm:left-6 sm:block">
+              {brand.category.name}
+            </span>
+          )
         )}
       </div>
 
@@ -85,5 +108,30 @@ export function BrandBanner({ brand, rank, eager }: { brand: TopBrand; rank: num
         </div>
       </div>
     </article>
+  );
+}
+
+const FAN = [
+  { card: "z-0 -mr-3 size-16 -rotate-6 sm:-mr-4 sm:size-[104px] lg:size-40", delay: "0.4s" },
+  { card: "z-10 size-[84px] sm:size-[136px] lg:size-52", delay: "0s" },
+  { card: "z-0 -ml-3 size-16 rotate-6 sm:-ml-4 sm:size-[104px] lg:size-40", delay: "0.9s" },
+];
+
+/** Three of the brand's own products on white cards, fanned out and gently floating. */
+function ProductFan({ showcase, eager }: { showcase: Showcase; eager?: boolean }) {
+  return (
+    <div aria-hidden className="absolute inset-0 flex items-center justify-end pr-4 sm:justify-center sm:pb-6 sm:pr-0">
+      {showcase.products.map((src, i) => (
+        <div key={src} className={cn("relative shrink-0", FAN[i].card)}>
+          <div
+            className="size-full rounded-2xl bg-white p-1 shadow-[0_12px_28px_-8px_rgb(15_46_51/0.55)] motion-safe:animate-[nc-float_5s_ease-in-out_infinite] sm:p-1.5"
+            style={{ animationDelay: FAN[i].delay }}
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={src} alt="" loading={eager ? "eager" : "lazy"} className="size-full rounded-xl object-contain" />
+          </div>
+        </div>
+      ))}
+    </div>
   );
 }
