@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { CouponHowTo } from "@/components/coupon-how-to";
 import {
   BellRing, CalendarClock, CheckCircle2, Layers, Mail, PiggyBank, ShoppingCart, Truck, type LucideIcon,
 } from "lucide-react";
@@ -73,14 +74,17 @@ const CHECKLIST = [
 export default function SavingsTipsPage() {
   return (
     <div className="container-page py-10">
-      <section className="rounded-[24px] bg-brand px-6 py-10 text-white sm:px-12 sm:py-14">
-        <p className="text-sm font-semibold uppercase tracking-wider text-white/80">Savings Tips</p>
-        <h1 className="mt-2 max-w-2xl text-3xl font-extrabold leading-tight tracking-tight text-white sm:text-5xl">
+      <section className="overflow-hidden rounded-[24px] bg-brand px-5 py-8 text-white sm:px-10 sm:py-10">
+        <p className="text-xs font-semibold uppercase tracking-wider text-white/80 sm:text-sm">Savings Tips</p>
+        <h1 className="mt-1.5 max-w-2xl text-2xl font-extrabold leading-tight tracking-tight text-white sm:text-3xl lg:text-4xl">
           Small habits that save you money every time you shop
         </h1>
-        <p className="mt-4 max-w-xl text-white/85">
+        <p className="mt-2 max-w-xl text-sm text-white/85 sm:text-base">
           Practical tricks our team uses to pay less online — no extreme couponing required.
         </p>
+        <div className="mt-8">
+          <CouponHowTo photo="/tips/cart.webp" />
+        </div>
       </section>
 
       <section aria-labelledby="tips-title" className="mt-12">
