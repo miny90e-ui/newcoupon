@@ -16,11 +16,6 @@ const THEMES: Record<string, { tagline: string; photo?: string }> = {
 };
 const FALLBACK = { tagline: "Coupons & deals" };
 
-/** The mood photo for a category, if it has one. */
-export function categoryPhoto(slug: string | null | undefined) {
-  return (slug && THEMES[slug]?.photo) || null;
-}
-
 type Category = { name: string; slug: string; icon: string | null; description?: string | null; _count?: { stores: number } };
 
 export function CategoryCard({ category, large = false }: { category: Category; large?: boolean }) {

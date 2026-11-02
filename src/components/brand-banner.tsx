@@ -2,23 +2,33 @@ import Link from "next/link";
 import { BadgeCheck, Flame } from "lucide-react";
 import type { TopBrand } from "@/lib/queries";
 import { cn } from "@/lib/utils";
-import { categoryPhoto } from "./category-card";
 import { RevealTrigger } from "./reveal-trigger";
 import { StoreLogo } from "./store-logo";
+
+// Bright lifestyle photo per category for the banners (free Unsplash licence), 1120px wide.
+const PHOTOS = new Set(["beauty", "fashion", "electronics", "travel", "home-garden", "food-dining", "sports-outdoors", "health-wellness"]);
 
 /** One home page banner for a top brand: category photo, logo, its most-used offer and Get Code. */
 export function BrandBanner({ brand, rank, eager }: { brand: TopBrand; rank: number; eager?: boolean }) {
   const { coupon } = brand;
   const isCode = coupon.type === "CODE";
-  const photo = categoryPhoto(brand.category?.slug) ?? "/tips/cart.webp";
+  const slug = brand.category?.slug;
+  const photo = `/banners/${slug && PHOTOS.has(slug) ? slug : "shopping"}.webp`;
   const headline = coupon.discountLabel ?? (isCode ? "Promo code" : "Special deal");
 
   return (
     <article className="grid h-full grid-rows-[116px_1fr] overflow-hidden rounded-[24px] bg-brand shadow-[0_14px_34px_-16px_rgb(15_46_51/0.45)] sm:grid-cols-[1.08fr_1fr] sm:grid-rows-1 sm:rounded-[28px]">
       <div className="relative overflow-hidden">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={photo} alt="" width={720} height={480} loading={eager ? "eager" : "lazy"} className="size-full object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-t from-ink/55 via-ink/10 to-transparent" />
+        <img
+          src={photo}
+          alt=""
+          width={1120}
+          height={720}
+          loading={eager ? "eager" : "lazy"}
+          className="size-full object-cover transition-transform duration-[3600ms] ease-out motion-safe:group-data-[current=true]:scale-110"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-ink/45 via-transparent to-transparent" />
         <span className="absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1.5 text-xs font-bold text-ink shadow sm:left-5 sm:top-5">
           <Flame className="size-3.5 text-brand" aria-hidden />#{rank} top brand
           {brand.uses > 0 && <span className="font-medium text-muted">· {brand.uses.toLocaleString("en-US")} uses</span>}

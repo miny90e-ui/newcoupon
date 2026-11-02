@@ -4,7 +4,7 @@ import { Children, useEffect, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight, Pause, Play } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const INTERVAL_MS = 5500;
+const INTERVAL_MS = 3000;
 
 /** Signed distance from `from` to `to` around a ring of `n`, in (-n/2, n/2]. */
 function ring(to: number, from: number, n: number) {
@@ -78,8 +78,9 @@ export function BrandCarousel({ labels, children }: { labels: string[]; children
               aria-roledescription="slide"
               aria-label={`${(i % n) + 1} of ${n}: ${labels[i % n] ?? ""}`}
               aria-hidden={!current}
+              data-current={current}
               className={cn(
-                "absolute left-1/2 top-3 h-[372px] w-[calc(100%-44px)] sm:h-[320px] sm:w-[calc(100%-112px)] lg:h-[360px] lg:w-[min(1160px,calc(100%-176px))]",
+                "group absolute left-1/2 top-3 h-[372px] w-[calc(100%-44px)] sm:h-[320px] sm:w-[calc(100%-112px)] lg:h-[360px] lg:w-[min(1160px,calc(100%-176px))]",
                 !wrapped && "transition-transform duration-700 ease-[cubic-bezier(0.22,0.61,0.36,1)]",
                 Math.abs(d) > 1 && Math.abs(before) > 1 && "invisible"
               )}
