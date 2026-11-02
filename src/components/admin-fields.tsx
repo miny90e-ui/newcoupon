@@ -28,7 +28,7 @@ export function TextArea({ name, label, defaultValue, hint }: { name: string; la
 export function Checkbox({ name, label, defaultChecked }: { name: string; label: string; defaultChecked?: boolean }) {
   return (
     <label className="flex min-h-11 cursor-pointer items-center gap-2.5 text-sm font-medium text-ink">
-      <input type="checkbox" name={name} defaultChecked={defaultChecked} className="size-5 accent-[#0a7d53]" />
+      <input type="checkbox" name={name} defaultChecked={defaultChecked} className="size-5 accent-[#0c7a80]" />
       {label}
     </label>
   );

@@ -4,10 +4,10 @@ export function Logo({ light = false }: { light?: boolean }) {
   return (
     <Link href="/" className="flex shrink-0 items-center gap-2.5" aria-label="New Coupon home">
       <svg viewBox="0 0 64 64" className="size-9" aria-hidden="true">
-        <rect width="64" height="64" rx="14" fill={light ? "#ffffff" : "#0b2545"} />
+        <rect width="64" height="64" rx="14" fill={light ? "#ffffff" : "#0f2e33"} />
         <path
           d="M14 22a4 4 0 0 1 4-4h28a4 4 0 0 1 4 4v5a5 5 0 0 0 0 10v5a4 4 0 0 1-4 4H18a4 4 0 0 1-4-4v-5a5 5 0 0 0 0-10z"
-          fill="#0a7d53"
+          fill="#0c7a80"
         />
         <path d="m25 39 14-14" stroke="#fff" strokeWidth="3.5" strokeLinecap="round" />
         <circle cx="26" cy="26" r="2.6" fill="#fff" />

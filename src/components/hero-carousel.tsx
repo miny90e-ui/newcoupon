@@ -55,7 +55,7 @@ export function HeroCarousel({ slides }: { slides: Slide[] }) {
               aria-label={`${i + 1} of ${count}`}
               aria-hidden={i !== index}
               className="relative flex min-h-[280px] w-full shrink-0 items-center sm:min-h-[340px] lg:min-h-[380px]"
-              style={{ backgroundColor: s.bgColor ?? "#0B2545" }}
+              style={{ backgroundColor: s.bgColor ?? "#0C7A80" }}
             >
               {s.imageUrl && (
                 // eslint-disable-next-line @next/next/no-img-element
@@ -69,21 +69,21 @@ export function HeroCarousel({ slides }: { slides: Slide[] }) {
                   <div className="relative flex h-40 w-72 rotate-[-6deg] items-stretch rounded-2xl bg-white/95 shadow-2xl">
                     <div className="flex flex-1 flex-col justify-center pl-7">
                       <span className="text-xs font-bold uppercase tracking-[0.2em] text-muted">Coupon</span>
-                      <span className="mt-1 text-5xl font-extrabold tracking-tight" style={{ color: s.bgColor ?? "#0B2545" }}>SAVE</span>
+                      <span className="mt-1 text-5xl font-extrabold tracking-tight" style={{ color: s.bgColor ?? "#0C7A80" }}>SAVE</span>
                     </div>
                     <div className="my-4 border-l-2 border-dashed border-line" />
                     <div className="flex w-20 items-center justify-center">
                       <span className="grid size-12 place-items-center rounded-full bg-brand text-2xl font-extrabold text-white">%</span>
                     </div>
-                    <span className="absolute -top-3 right-[76px] size-6 rounded-full" style={{ backgroundColor: s.bgColor ?? "#0B2545" }} />
-                    <span className="absolute -bottom-3 right-[76px] size-6 rounded-full" style={{ backgroundColor: s.bgColor ?? "#0B2545" }} />
+                    <span className="absolute -top-3 right-[76px] size-6 rounded-full" style={{ backgroundColor: s.bgColor ?? "#0C7A80" }} />
+                    <span className="absolute -bottom-3 right-[76px] size-6 rounded-full" style={{ backgroundColor: s.bgColor ?? "#0C7A80" }} />
                   </div>
                 </div>
               )}
               <div className="relative max-w-2xl px-8 py-12 sm:px-14 lg:px-20">
                 <h2 className="text-3xl font-extrabold leading-tight tracking-tight text-white sm:text-4xl lg:text-5xl">{s.title}</h2>
                 {s.subtitle && <p className="mt-3 max-w-lg text-base text-white/85 sm:text-lg">{s.subtitle}</p>}
-                <Link href={s.href} tabIndex={i === index ? 0 : -1} className="btn mt-7 bg-white text-ink hover:bg-gold">
+                <Link href={s.href} tabIndex={i === index ? 0 : -1} className="btn mt-7 bg-white text-ink hover:bg-brand-tint">
                   {s.ctaLabel || "Shop now"}
                 </Link>
               </div>

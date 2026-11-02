@@ -8,6 +8,7 @@ const COLS = [
       { href: "/stores", label: "All stores" },
       { href: "/categories", label: "Categories" },
       { href: "/deals", label: "Best deals" },
+      { href: "/savings-tips", label: "Savings tips" },
     ],
   },
   {

@@ -72,7 +72,7 @@ export default async function AdminCoupons({
                   <td className="p-3">
                     <form action={toggleCouponActive}>
                       <input type="hidden" name="id" value={c.id} />
-                      <button className={`cursor-pointer rounded-full px-2.5 py-1 text-xs font-bold ${expired ? "bg-gold-tint text-[#8a5300]" : c.active ? "bg-brand-tint text-brand" : "bg-canvas text-muted"}`} title="Click to turn on/off">
+                      <button className={`cursor-pointer rounded-full px-2.5 py-1 text-xs font-bold ${expired ? "bg-red-50 text-danger" : c.active ? "bg-brand-tint text-brand" : "bg-canvas text-muted"}`} title="Click to turn on/off">
                         {expired ? "Expired" : c.active ? "Live" : "Off"}
                       </button>
                     </form>

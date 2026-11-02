@@ -6,7 +6,7 @@ export const metadata: Metadata = { title: "Privacy policy", alternates: { canon
 export default function PrivacyPage() {
   return (
     <ProsePage title="Privacy policy" updated="November 2026">
-      <p className="rounded-lg bg-gold-tint p-3 text-sm">
+      <p className="rounded-lg bg-brand-tint p-3 text-sm">
         Template text — have it reviewed for your business and the countries you serve before launch.
       </p>
       <h2>What we collect</h2>

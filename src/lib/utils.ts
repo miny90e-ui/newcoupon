@@ -46,7 +46,7 @@ export function monogram(name: string) {
     .slice(0, 2)
     .map((w) => w[0]!.toUpperCase())
     .join("");
-  const palette = ["#0B2545", "#134E4A", "#7A2E4A", "#3B2F7A", "#7C4A12", "#1E3A8A", "#4A5568", "#0F5257"];
+  const palette = ["#0C7A80", "#0F2E33", "#17444B", "#0A6670"];
   let h = 0;
   for (const ch of name) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
   return { letters: letters || "NC", color: palette[h % palette.length] };

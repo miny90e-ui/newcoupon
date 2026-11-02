@@ -13,7 +13,7 @@ export default async function AdminBanners({ searchParams }: { searchParams: Pro
       <ul className="mt-4 grid gap-4 sm:grid-cols-2">
         {banners.map((b) => (
           <li key={b.id}>
-            <Link href={`/admin/banners/${b.id}`} className="block overflow-hidden rounded-xl text-white shadow" style={{ backgroundColor: b.bgColor ?? "#0B2545" }}>
+            <Link href={`/admin/banners/${b.id}`} className="block overflow-hidden rounded-xl text-white shadow" style={{ backgroundColor: b.bgColor ?? "#0C7A80" }}>
               <div className="relative p-5">
                 {b.imageUrl && (
                   // eslint-disable-next-line @next/next/no-img-element

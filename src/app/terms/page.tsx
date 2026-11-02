@@ -6,7 +6,7 @@ export const metadata: Metadata = { title: "Terms of use", alternates: { canonic
 export default function TermsPage() {
   return (
     <ProsePage title="Terms of use" updated="November 2026">
-      <p className="rounded-lg bg-gold-tint p-3 text-sm">
+      <p className="rounded-lg bg-brand-tint p-3 text-sm">
         Template text — have it reviewed for your business before launch.
       </p>
       <h2>Using New Coupon</h2>

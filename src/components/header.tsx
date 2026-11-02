@@ -8,12 +8,13 @@ export const NAV = [
   { href: "/stores", label: "Stores" },
   { href: "/categories", label: "Categories" },
   { href: "/deals", label: "Best Deals" },
+  { href: "/savings-tips", label: "Savings Tips" },
 ];
 
 export async function Header() {
   const user = await getCurrentUser();
   return (
-    <header className="sticky top-0 z-40 bg-ink text-white shadow-md">
+    <header className="sticky top-0 z-40 bg-brand text-white shadow-md">
       <div className="container-page flex h-16 items-center gap-6">
         <Logo light />
         <nav aria-label="Main" className="hidden md:block">
@@ -41,7 +42,7 @@ export async function Header() {
               name="q"
               type="search"
               placeholder="Search stores or brands"
-              className="h-11 w-full rounded-full border-0 bg-white pl-10 pr-4 text-[15px] text-body placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-gold"
+              className="h-11 w-full rounded-full border-0 bg-white pl-10 pr-4 text-[15px] text-body placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-ink/40"
             />
           </div>
         </form>

@@ -195,7 +195,7 @@ export async function saveBanner(_: FormState, f: FormData): Promise<FormState> 
         ctaLabel: z.string().max(40).nullable(),
         linkUrl: z.string().refine((v) => v.startsWith("/") || /^https?:\/\//.test(v), "Use /a-page or https://…"),
         imageUrl: z.string().nullable(),
-        bgColor: z.string().regex(/^#[0-9a-fA-F]{6}$/, "Use a hex colour like #0B2545").nullable(),
+        bgColor: z.string().regex(/^#[0-9a-fA-F]{6}$/, "Use a hex colour like #0C7A80").nullable(),
         sortOrder: z.number().int(),
         active: z.boolean(),
       })

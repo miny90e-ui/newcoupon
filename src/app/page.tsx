@@ -37,7 +37,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
         {slides.length > 0 ? (
           <HeroCarousel slides={slides} />
         ) : (
-          <section className="rounded-[24px] bg-ink px-8 py-14 text-white sm:px-14">
+          <section className="rounded-[24px] bg-brand px-8 py-14 text-white sm:px-14">
             <h2 className="text-3xl font-extrabold text-white sm:text-5xl">Save on everything you buy</h2>
             <p className="mt-3 text-white/80">Coupon codes and deals from stores across every category.</p>
           </section>

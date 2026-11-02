@@ -12,7 +12,7 @@ export function BannerForm({ banner }: { banner?: Banner }) {
         <TextField name="subtitle" label="Subtitle" defaultValue={banner?.subtitle} />
         <TextField name="ctaLabel" label="Button text" defaultValue={banner?.ctaLabel ?? "Shop now"} />
         <TextField name="linkUrl" label="Button link" defaultValue={banner?.linkUrl} required placeholder="/stores/some-store or https://…" />
-        <TextField name="bgColor" label="Background colour" defaultValue={banner?.bgColor ?? "#0B2545"} hint="Used when there is no image. Hex, e.g. #0B2545." />
+        <TextField name="bgColor" label="Background colour" defaultValue={banner?.bgColor ?? "#0C7A80"} hint="Used when there is no image. Hex, e.g. #0C7A80." />
         <TextField name="sortOrder" label="Order" type="number" defaultValue={banner?.sortOrder ?? 0} />
         <div>
           <label htmlFor="imageFile" className="label">Background image</label>

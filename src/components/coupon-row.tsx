@@ -17,7 +17,7 @@ export function CouponRow({ coupon, saved, expired = false }: { coupon: CouponWi
       </div>
       <div className="min-w-0 flex-1 pr-10 sm:pr-0">
         <div className="flex flex-wrap items-center gap-2">
-          {coupon.exclusive && <span className="rounded bg-gold-tint px-2 py-0.5 text-xs font-bold uppercase text-[#8a5300]">Exclusive</span>}
+          {coupon.exclusive && <span className="rounded bg-brand-tint px-2 py-0.5 text-xs font-bold uppercase text-brand">Exclusive</span>}
           {coupon.tag && <span className="rounded bg-canvas px-2 py-0.5 text-xs font-bold uppercase text-ink">{coupon.tag}</span>}
         </div>
         <h3 className="mt-1.5 text-lg font-bold leading-snug">{coupon.title}</h3>
