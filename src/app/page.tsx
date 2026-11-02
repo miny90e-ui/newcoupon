@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { BadgeCheck, Gift, MousePointerClick, Percent, ShieldCheck, Tag } from "lucide-react";
+import { BadgeCheck, Gift, MousePointerClick, ShieldCheck, Tag } from "lucide-react";
 import { db } from "@/lib/db";
 import { couponCardInclude, getSavedIds, liveCouponWhere, storeSummaries, topBrands, type StoreSummary } from "@/lib/queries";
 import { getSession } from "@/lib/session";
@@ -61,45 +61,27 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
         </div>
       )}
 
-      <section className="container-page pt-8 sm:pt-10">
-        <div className="relative isolate rounded-[28px] bg-brand-tint px-4 py-10 text-center sm:px-10 sm:py-14">
+      <section className="container-page pt-5 sm:pt-6">
+        <div className="relative isolate rounded-[24px] bg-brand-tint px-4 py-6 text-center sm:px-10 sm:py-7">
           <div
             aria-hidden
-            className="absolute inset-0 -z-10 overflow-hidden rounded-[28px] bg-[radial-gradient(rgb(12_122_128/0.16)_1px,transparent_1px)] [background-size:18px_18px] [mask-image:radial-gradient(ellipse_at_center,black_20%,transparent_75%)]"
+            className="absolute inset-0 -z-10 overflow-hidden rounded-[24px] bg-[radial-gradient(rgb(12_122_128/0.16)_1px,transparent_1px)] [background-size:18px_18px] [mask-image:radial-gradient(ellipse_at_center,black_20%,transparent_75%)]"
           />
-          <FloatingOffers offers={popular.filter((s) => s.bestOffer).slice(0, 4)} />
+          <FloatingOffers offers={popular.filter((s) => s.bestOffer).slice(0, 2)} />
 
           <p className="inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1 text-xs font-bold text-brand shadow-[var(--shadow-card)]">
             <BadgeCheck className="size-3.5" aria-hidden /> Every code checked by our team
           </p>
-          <h1 className="mx-auto mt-4 max-w-4xl text-[28px] font-extrabold leading-tight tracking-tight sm:text-4xl lg:text-[42px]">
+          <h1 className="mx-auto mt-2.5 max-w-4xl text-[22px] font-extrabold leading-tight tracking-tight sm:text-[28px] lg:text-[32px]">
             Verified coupons from the stores you shop
           </h1>
-          <p className="mx-auto mt-3 max-w-2xl text-muted">
-            Hand-picked promo codes and deals, checked by our team.{" "}
-            <span className="text-sm">
-              When you buy through links on our site,{" "}
-              <Link href="/disclosure" className="underline underline-offset-2 hover:text-ink">
-                we may earn a commission
-              </Link>
-              .
-            </span>
+          <p className="mx-auto mt-1.5 max-w-2xl text-sm text-muted">
+            When you buy through links on our site,{" "}
+            <Link href="/disclosure" className="underline underline-offset-2 hover:text-ink">
+              we may earn a commission
+            </Link>
+            .
           </p>
-          {popular.length > 0 && (
-            <div className="mt-6 flex flex-wrap items-center justify-center gap-2 text-sm">
-              <span className="font-semibold text-muted">Popular:</span>
-              {popular.slice(0, 4).map((s) => (
-                <Link
-                  key={s.slug}
-                  href={`/stores/${s.slug}`}
-                  className="inline-flex h-11 items-center gap-2 rounded-full bg-white pl-1.5 pr-4 font-semibold text-ink ring-1 ring-line transition-[color,box-shadow] duration-200 hover:text-brand hover:ring-brand"
-                >
-                  <StoreLogo name={s.name} logoUrl={s.logoUrl} className="size-8 rounded-full text-[10px]" />
-                  {s.name}
-                </Link>
-              ))}
-            </div>
-          )}
         </div>
       </section>
 
@@ -180,13 +162,11 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
 }
 
 const SLOTS = [
-  { at: "left-6 top-10 -rotate-3", delay: "0s", icon: Tag },
-  { at: "left-14 bottom-10 rotate-2", delay: "1.6s", icon: Percent },
-  { at: "right-6 top-12 rotate-3", delay: "0.8s", icon: Gift },
-  { at: "right-14 bottom-12 -rotate-2", delay: "2.4s", icon: BadgeCheck },
+  { at: "left-8 top-1/2 -translate-y-1/2 -rotate-3", delay: "0s", icon: Tag },
+  { at: "right-8 top-1/2 -translate-y-1/2 rotate-3", delay: "1.2s", icon: Gift },
 ];
 
-/** Decorative offer tickets floating beside the hero search on wide screens. */
+/** Decorative offer tickets floating either side of the hero title on wide screens. */
 function FloatingOffers({ offers }: { offers: StoreSummary[] }) {
   return (
     <div aria-hidden className="pointer-events-none absolute inset-0 hidden xl:block">
