@@ -3,6 +3,7 @@ import { Search, User, Heart, LayoutDashboard } from "lucide-react";
 import { getCurrentUser } from "@/lib/session";
 import { Logo } from "./logo";
 import { MobileMenu } from "./mobile-menu";
+import { StoreSearch } from "./store-search";
 
 export const NAV = [
   { href: "/stores", label: "Stores" },
@@ -31,21 +32,7 @@ export async function Header() {
             ))}
           </ul>
         </nav>
-        <form action="/search" role="search" className="ml-auto hidden flex-1 lg:block lg:max-w-sm">
-          <label htmlFor="q-desktop" className="sr-only">
-            Search stores and coupons
-          </label>
-          <div className="relative">
-            <Search className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-muted" aria-hidden />
-            <input
-              id="q-desktop"
-              name="q"
-              type="search"
-              placeholder="Search stores or brands"
-              className="h-11 w-full rounded-full border-0 bg-white pl-10 pr-4 text-[15px] text-body placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-ink/40"
-            />
-          </div>
-        </form>
+        <StoreSearch size="sm" placeholder="Search stores or brands" className="ml-auto hidden flex-1 lg:block lg:max-w-sm" />
         <div className="ml-auto flex items-center gap-1 lg:ml-0">
           <Link
             href="/search"

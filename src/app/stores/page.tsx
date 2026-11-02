@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
-import { db } from "@/lib/db";
-import { liveCouponWhere } from "@/lib/queries";
-import { StoresDirectory, type DirectoryStore } from "@/components/stores-directory";
+import { storeSummaries } from "@/lib/queries";
+import { StoresDirectory } from "@/components/stores-directory";
 
 export const metadata: Metadata = {
   title: "All Stores A–Z",
@@ -10,32 +9,7 @@ export const metadata: Metadata = {
 };
 
 export default async function StoresPage() {
-  const live = liveCouponWhere();
-  const rows = await db.store.findMany({
-    select: {
-      name: true,
-      slug: true,
-      logoUrl: true,
-      category: { select: { name: true } },
-      _count: { select: { coupons: { where: live } } },
-      coupons: {
-        where: { ...live, discountLabel: { not: null } },
-        select: { discountLabel: true },
-        orderBy: [{ featured: "desc" }, { clicks: "desc" }],
-        take: 1,
-      },
-    },
-    orderBy: { name: "asc" },
-  });
-
-  const stores: DirectoryStore[] = rows.map((r) => ({
-    name: r.name,
-    slug: r.slug,
-    logoUrl: r.logoUrl,
-    category: r.category?.name ?? null,
-    offers: r._count.coupons,
-    bestOffer: r.coupons[0]?.discountLabel ?? null,
-  }));
+  const stores = await storeSummaries();
   const offers = stores.reduce((n, s) => n + s.offers, 0);
 
   return (

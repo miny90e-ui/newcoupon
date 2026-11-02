@@ -5,6 +5,7 @@ import { getSession } from "@/lib/session";
 import { CouponCard } from "@/components/coupon-card";
 import { CouponReveal } from "@/components/coupon-reveal";
 import { StoreTile } from "@/components/store-tile";
+import { StoreSearch } from "@/components/store-search";
 
 export const metadata: Metadata = { title: "Search", robots: { index: false } };
 
@@ -36,11 +37,7 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
   return (
     <div className="container-page py-10">
       <h1 className="text-3xl font-extrabold tracking-tight">{query ? <>Results for &ldquo;{query}&rdquo;</> : "Search"}</h1>
-      <form action="/search" role="search" className="mt-5 flex max-w-xl gap-2">
-        <label htmlFor="q-page" className="sr-only">Search stores and coupons</label>
-        <input id="q-page" name="q" type="search" defaultValue={query} placeholder="Store, brand or product" className="input h-12 rounded-full px-5" autoFocus={!query} />
-        <button className="btn-primary h-12 px-6">Search</button>
-      </form>
+      <StoreSearch key={query} defaultValue={query} autoFocus={!query} placeholder="Store, brand or product" className="mt-5 max-w-xl" />
 
       {query && stores.length === 0 && coupons.length === 0 && (
         <p className="card mt-8 p-8 text-center text-muted">No stores or coupons match &ldquo;{query}&rdquo;. Try a shorter word or a store name.</p>

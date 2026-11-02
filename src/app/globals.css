@@ -51,6 +51,7 @@ h1, h2, h3 {
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
@@ -115,4 +116,16 @@ h1, h2, h3 {
 @keyframes nc-type {
   from { width: 0; }
   to { width: 7ch; }
+}
+
+/* Home hero: floating offers, typing caret, suggestion dropdown */
+@keyframes nc-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+@keyframes nc-blink {
+  50% { opacity: 0; }
+}
+@keyframes nc-drop {
+  from { opacity: 0; transform: translateY(-4px); }
 }
