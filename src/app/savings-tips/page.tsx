@@ -10,44 +10,53 @@ export const metadata: Metadata = {
   alternates: { canonical: "/savings-tips" },
 };
 
-const TIPS: { icon: LucideIcon; title: string; body: string }[] = [
+// Photos: free-licence Unsplash images in /public/tips.
+const TIPS: { icon: LucideIcon; photo: string; title: string; body: string }[] = [
   {
     icon: Layers,
+    photo: "/tips/stack.webp",
     title: "Stack a code on top of a sale",
     body: "Many stores let a promo code apply to items that are already marked down. Add sale items to your cart first, then try the code — the two discounts often combine.",
   },
   {
     icon: Mail,
+    photo: "/tips/email.webp",
     title: "Claim the first-order discount",
     body: "Newsletter and SMS sign-ups usually unlock 10–20% off your first purchase. Use a dedicated shopping email so the offers don't crowd your main inbox.",
   },
   {
     icon: Truck,
+    photo: "/tips/shipping.webp",
     title: "Mind the free-shipping threshold",
     body: "If you're a few dollars short of free shipping, add something you'd buy anyway instead of paying for delivery. It's often cheaper than the shipping fee.",
   },
   {
     icon: ShoppingCart,
+    photo: "/tips/cart.webp",
     title: "Leave items in your cart",
     body: "Signed in and left a cart behind? Some stores follow up with a reminder and an extra discount within a day or two. Patience can pay.",
   },
   {
     icon: CalendarClock,
+    photo: "/tips/calendar.webp",
     title: "Shop the calendar",
     body: "Big savings cluster around Black Friday, Cyber Monday, end-of-season clearances and back-to-school. Plan bigger purchases around those windows.",
   },
   {
     icon: BellRing,
+    photo: "/tips/save.webp",
     title: "Save the coupons you'll need",
     body: "Tap the heart on any New Coupon offer to keep it in your account, so the code is ready when you're ready to buy — before it expires.",
   },
   {
     icon: PiggyBank,
+    photo: "/tips/compare.webp",
     title: "Compare the final price, not the discount",
     body: "A bigger percentage off isn't always the better deal. Check the total after shipping and taxes across two or three stores before you pay.",
   },
   {
     icon: CheckCircle2,
+    photo: "/tips/fine-print.webp",
     title: "Read the fine print",
     body: "Codes can exclude certain brands, gift cards or sale items, and many have a minimum spend. A quick look at the terms saves a failed checkout.",
   },
@@ -77,18 +86,34 @@ export default function SavingsTipsPage() {
       <section aria-labelledby="tips-title" className="mt-12">
         <h2 id="tips-title" className="section-title">8 ways to pay less</h2>
         <ol className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {TIPS.map(({ icon: Icon, title, body }, i) => (
-            <li key={title} className="card flex flex-col p-5 transition-shadow duration-300 hover:shadow-[var(--shadow-lift)]">
-              <div className="flex items-center justify-between">
-                <span className="grid size-11 place-items-center rounded-xl bg-brand-tint text-brand">
-                  <Icon className="size-5" aria-hidden />
-                </span>
-                <span className="text-sm font-bold text-muted" aria-hidden>
+          {TIPS.map(({ icon: Icon, photo, title, body }, i) => (
+            <li
+              key={title}
+              className="card group flex flex-col overflow-hidden transition-[transform,box-shadow] duration-300 hover:-translate-y-0.5 hover:shadow-[var(--shadow-lift)]"
+            >
+              <div className="relative aspect-[16/10] overflow-hidden bg-brand-tint">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={photo}
+                  alt=""
+                  width={640}
+                  height={400}
+                  loading="lazy"
+                  decoding="async"
+                  className="size-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+                />
+                <span aria-hidden className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-ink/35 to-transparent" />
+                <span className="absolute right-3 top-3 rounded-full bg-white/90 px-2.5 py-1 text-xs font-bold text-ink shadow-sm backdrop-blur" aria-hidden>
                   {String(i + 1).padStart(2, "0")}
                 </span>
               </div>
-              <h3 className="mt-4 text-base font-bold leading-snug">{title}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-muted">{body}</p>
+              <div className="relative flex flex-1 flex-col px-5 pb-5">
+                <span className="-mt-6 grid size-12 place-items-center rounded-xl bg-brand text-white shadow-md ring-4 ring-white transition-transform duration-300 group-hover:-translate-y-0.5">
+                  <Icon className="size-5" aria-hidden />
+                </span>
+                <h3 className="mt-3 text-base font-bold leading-snug">{title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-muted">{body}</p>
+              </div>
             </li>
           ))}
         </ol>
