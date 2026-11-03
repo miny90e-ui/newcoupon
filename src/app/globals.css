@@ -16,6 +16,9 @@
   --color-body: #1f2937;
   --color-muted: #5b6475;
   --color-danger: #b42318;
+  /* Seasonal: Black Friday hero (night black + sale gold) */
+  --color-night: #0b0b10;
+  --color-gold: #ffd23f;
 
   --radius-card: 14px;
   --shadow-card: 0 1px 2px rgb(15 46 51 / 0.06), 0 2px 8px rgb(15 46 51 / 0.04);
@@ -127,16 +130,8 @@ h1, h2, h3 {
   from { opacity: 0; transform: translateY(-4px); }
 }
 
-/* Home savings receipts: the "You save" stamp lands as its receipt scrolls into view */
-@keyframes nc-stamp {
-  from { opacity: 0; scale: 1.7; }
-}
-@supports (animation-timeline: view()) {
-  @media (prefers-reduced-motion: no-preference) {
-    .nc-stamp {
-      animation: nc-stamp linear both;
-      animation-timeline: view();
-      animation-range: entry 30% cover 40%;
-    }
-  }
+/* Black Friday hero: sparkles twinkle in the backdrop */
+@keyframes nc-twinkle {
+  0%, 100% { opacity: 0.25; scale: 0.8; }
+  50% { opacity: 1; scale: 1; }
 }

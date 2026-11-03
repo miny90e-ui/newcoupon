@@ -12,10 +12,10 @@ const STEPS = [
 const STEP_MS = 2800;
 
 /**
- * Hero feature for the Savings Tips page: the three steps on the left light up in sync with a
+ * How-to feature (Savings Tips hero, foot of the home page): the three steps on the left light up in sync with a
  * small looping checkout animation on the right. With reduced motion it shows the final step, still.
  */
-export function CouponHowTo({ photo }: { photo: string }) {
+export function CouponHowTo({ photo, kicker = "Start here · Tip #1" }: { photo: string; kicker?: string }) {
   const [step, setStep] = useState(0);
   const [animate, setAnimate] = useState(true);
 
@@ -34,7 +34,7 @@ export function CouponHowTo({ photo }: { photo: string }) {
     <div className="grid items-center gap-8 lg:grid-cols-[1fr_1.05fr]">
       {/* Featured tip: the one shoppers look for first */}
       <div className="rounded-2xl bg-white/10 p-5 ring-1 ring-white/15 sm:p-6">
-        <p className="text-xs font-bold uppercase tracking-wider text-white/75">Start here · Tip #1</p>
+        <p className="text-xs font-bold uppercase tracking-wider text-white/75">{kicker}</p>
         <h2 className="mt-1 text-xl font-extrabold text-white sm:text-2xl">How to use a coupon code</h2>
         <ol className="mt-4 space-y-2">
           {STEPS.map(({ icon: Icon, title, body }, i) => (

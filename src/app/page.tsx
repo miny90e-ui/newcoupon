@@ -1,15 +1,7 @@
 import Link from "next/link";
-import { BadgeCheck, Gift, MousePointerClick, ShieldCheck, Tag } from "lucide-react";
+import { BadgeCheck, Gift, Tag } from "lucide-react";
 import { db } from "@/lib/db";
-import {
-  couponCardInclude,
-  getSavedIds,
-  liveCouponWhere,
-  savingsExamples,
-  storeSummaries,
-  topBrands,
-  type StoreSummary,
-} from "@/lib/queries";
+import { couponCardInclude, getSavedIds, liveCouponWhere, storeSummaries, topBrands, type StoreSummary } from "@/lib/queries";
 import { getSession } from "@/lib/session";
 import { safeHref } from "@/lib/utils";
 import { HeroCarousel } from "@/components/hero-carousel";
@@ -20,14 +12,15 @@ import { CategoryCard } from "@/components/category-card";
 import { StoreLogo } from "@/components/store-logo";
 import { BrandCarousel } from "@/components/brand-carousel";
 import { BrandBanner } from "@/components/brand-banner";
-import { SavingsProof } from "@/components/savings-proof";
+import { BlackFridayHero, blackFriday } from "@/components/black-friday-hero";
+import { CouponHowTo } from "@/components/coupon-how-to";
 
 export default async function HomePage({ searchParams }: { searchParams: Promise<{ c?: string }> }) {
   const { c } = await searchParams;
   const session = await getSession();
   const live = liveCouponWhere();
 
-  const [banners, featured, latest, stores, categories, saved, summaries, brands, savings] = await Promise.all([
+  const [banners, featured, latest, stores, categories, saved, summaries, brands] = await Promise.all([
     db.banner.findMany({ where: { active: true }, orderBy: { sortOrder: "asc" } }),
     db.coupon.findMany({ where: { ...live, featured: true }, include: couponCardInclude, orderBy: { updatedAt: "desc" }, take: 10 }),
     db.coupon.findMany({ where: live, include: couponCardInclude, orderBy: { createdAt: "desc" }, take: 8 }),
@@ -41,11 +34,11 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
     getSavedIds(session?.userId),
     storeSummaries(),
     topBrands(5),
-    savingsExamples(3),
   ]);
 
   const slides = banners.map((b) => ({ ...b, href: safeHref(b.linkUrl) }));
   const popular = summaries.filter((s) => s.offers > 0).sort((a, b) => b.offers - a.offers);
+  const friday = blackFriday();
 
   return (
     <>
@@ -71,29 +64,34 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
         </div>
       )}
 
-      <section className="container-page pt-5 sm:pt-6">
-        <div className="relative isolate rounded-[24px] bg-brand-tint px-4 py-6 text-center sm:px-10 sm:py-7">
-          <div
-            aria-hidden
-            className="absolute inset-0 -z-10 overflow-hidden rounded-[24px] bg-[radial-gradient(rgb(12_122_128/0.16)_1px,transparent_1px)] [background-size:18px_18px] [mask-image:radial-gradient(ellipse_at_center,black_20%,transparent_75%)]"
-          />
-          <FloatingOffers offers={popular.filter((s) => s.bestOffer).slice(0, 2)} />
+      {/* Title panel; from 1 November to the end of Cyber Monday it wears the Black Friday look */}
+      {friday ? (
+        <BlackFridayHero starts={friday.starts} ends={friday.ends} offers={popular.filter((s) => s.bestOffer).slice(0, 2)} />
+      ) : (
+        <section className="container-page pt-5 sm:pt-6">
+          <div className="relative isolate rounded-[24px] bg-brand-tint px-4 py-6 text-center sm:px-10 sm:py-7">
+            <div
+              aria-hidden
+              className="absolute inset-0 -z-10 overflow-hidden rounded-[24px] bg-[radial-gradient(rgb(12_122_128/0.16)_1px,transparent_1px)] [background-size:18px_18px] [mask-image:radial-gradient(ellipse_at_center,black_20%,transparent_75%)]"
+            />
+            <FloatingOffers offers={popular.filter((s) => s.bestOffer).slice(0, 2)} />
 
-          <p className="inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1 text-xs font-bold text-brand shadow-[var(--shadow-card)]">
-            <BadgeCheck className="size-3.5" aria-hidden /> Every code checked by our team
-          </p>
-          <h1 className="mx-auto mt-2.5 max-w-4xl text-[22px] font-extrabold leading-tight tracking-tight sm:text-[28px] lg:text-[32px]">
-            Verified coupons from the stores you shop
-          </h1>
-          <p className="mx-auto mt-1.5 max-w-2xl text-sm text-muted">
-            When you buy through links on our site,{" "}
-            <Link href="/disclosure" className="underline underline-offset-2 hover:text-ink">
-              we may earn a commission
-            </Link>
-            .
-          </p>
-        </div>
-      </section>
+            <p className="inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1 text-xs font-bold text-brand shadow-[var(--shadow-card)]">
+              <BadgeCheck className="size-3.5" aria-hidden /> Every code checked by our team
+            </p>
+            <h1 className="mx-auto mt-2.5 max-w-4xl text-[22px] font-extrabold leading-tight tracking-tight sm:text-[28px] lg:text-[32px]">
+              Verified coupons from the stores you shop
+            </h1>
+            <p className="mx-auto mt-1.5 max-w-2xl text-sm text-muted">
+              When you buy through links on our site,{" "}
+              <Link href="/disclosure" className="underline underline-offset-2 hover:text-ink">
+                we may earn a commission
+              </Link>
+              .
+            </p>
+          </div>
+        </section>
+      )}
 
       {featured.length > 0 && (
         <section className="container-page pt-14" aria-labelledby="featured-title">
@@ -147,33 +145,11 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
         </section>
       )}
 
-      <section className="container-page pt-16" aria-labelledby="how-title">
-        <div className="card grid gap-8 p-8 sm:p-10 md:grid-cols-3">
-          <h2 id="how-title" className="sr-only">How New Coupon works</h2>
-          {[
-            { icon: MousePointerClick, t: "Pick an offer", d: "Browse codes and deals by store or category, or search for what you need." },
-            { icon: BadgeCheck, t: "Copy the code", d: "Click Get Code. We show the code and open the store in one step." },
-            { icon: ShieldCheck, t: "Save at checkout", d: "Paste the code at checkout. Deals apply automatically — no code needed." },
-          ].map(({ icon: Icon, t, d }) => (
-            <div key={t}>
-              <span className="grid size-12 place-items-center rounded-2xl bg-brand-tint text-brand">
-                <Icon className="size-6" aria-hidden />
-              </span>
-              <h3 className="mt-4 text-lg font-bold">{t}</h3>
-              <p className="mt-1 text-sm leading-relaxed text-muted">{d}</p>
-            </div>
-          ))}
+      <section className="container-page pt-16" aria-label="How to use a coupon code">
+        <div className="overflow-hidden rounded-[24px] bg-brand px-5 py-8 sm:px-10 sm:py-10">
+          <CouponHowTo photo="/tips/cart.webp" kicker="Quick guide · 3 steps" />
         </div>
       </section>
-
-      {savings.examples.length > 0 && (
-        <SavingsProof
-          examples={savings.examples}
-          bestPct={savings.bestPct}
-          offers={popular.reduce((n, s) => n + s.offers, 0)}
-          stores={popular.length}
-        />
-      )}
 
       <CouponReveal couponId={c} />
     </>
