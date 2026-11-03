@@ -98,3 +98,51 @@ export async function topBrands(limit = 5) {
 }
 
 export type TopBrand = Awaited<ReturnType<typeof topBrands>>[number];
+
+/** The order total the home page savings receipts are worked out on. */
+export const EXAMPLE_ORDER = 100;
+
+/** "15% OFF" → 15% off, "$10 OFF" → $10 off. "Up to …", free shipping and the like can't be worked out, so null. */
+function parseDiscount(label: string | null): { pct: number } | { usd: number } | null {
+  if (!label || /up\s*to/i.test(label)) return null;
+  const pct = label.match(/(\d{1,2}(?:\.\d+)?)\s*%/);
+  if (pct && +pct[1] > 0) return { pct: +pct[1] };
+  const usd = label.match(/\$\s?(\d+(?:\.\d{1,2})?)/);
+  if (usd && +usd[1] > 0 && +usd[1] < EXAMPLE_ORDER) return { usd: +usd[1] };
+  return null;
+}
+
+/**
+ * Live offers with a plain % or $ discount, most used first and one per store, each with what it
+ * takes off an example order. Real data only: the home page shows these instead of testimonials.
+ */
+export async function savingsExamples(limit = 3) {
+  const coupons = await db.coupon.findMany({
+    where: { ...liveCouponWhere(), discountLabel: { not: null } },
+    select: {
+      id: true,
+      title: true,
+      type: true,
+      discountLabel: true,
+      clicks: true,
+      store: { select: { name: true, slug: true, logoUrl: true } },
+    },
+    orderBy: [{ clicks: "desc" }, { featured: "desc" }, { createdAt: "desc" }],
+  });
+
+  const examples = [];
+  const seen = new Set<string>();
+  let bestPct = 0;
+  for (const c of coupons) {
+    const off = parseDiscount(c.discountLabel);
+    if (!off) continue;
+    if ("pct" in off) bestPct = Math.max(bestPct, off.pct);
+    if (seen.has(c.store.slug) || examples.length === limit) continue;
+    seen.add(c.store.slug);
+    const save = "pct" in off ? Math.round(EXAMPLE_ORDER * off.pct) / 100 : off.usd;
+    examples.push({ ...c, save, pay: EXAMPLE_ORDER - save });
+  }
+  return { examples, bestPct };
+}
+
+export type SavingsExample = Awaited<ReturnType<typeof savingsExamples>>["examples"][number];

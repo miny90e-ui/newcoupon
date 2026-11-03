@@ -126,3 +126,17 @@ h1, h2, h3 {
 @keyframes nc-drop {
   from { opacity: 0; transform: translateY(-4px); }
 }
+
+/* Home savings receipts: the "You save" stamp lands as its receipt scrolls into view */
+@keyframes nc-stamp {
+  from { opacity: 0; scale: 1.7; }
+}
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .nc-stamp {
+      animation: nc-stamp linear both;
+      animation-timeline: view();
+      animation-range: entry 30% cover 40%;
+    }
+  }
+}

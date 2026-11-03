@@ -1,7 +1,15 @@
 import Link from "next/link";
 import { BadgeCheck, Gift, MousePointerClick, ShieldCheck, Tag } from "lucide-react";
 import { db } from "@/lib/db";
-import { couponCardInclude, getSavedIds, liveCouponWhere, storeSummaries, topBrands, type StoreSummary } from "@/lib/queries";
+import {
+  couponCardInclude,
+  getSavedIds,
+  liveCouponWhere,
+  savingsExamples,
+  storeSummaries,
+  topBrands,
+  type StoreSummary,
+} from "@/lib/queries";
 import { getSession } from "@/lib/session";
 import { safeHref } from "@/lib/utils";
 import { HeroCarousel } from "@/components/hero-carousel";
@@ -12,13 +20,14 @@ import { CategoryCard } from "@/components/category-card";
 import { StoreLogo } from "@/components/store-logo";
 import { BrandCarousel } from "@/components/brand-carousel";
 import { BrandBanner } from "@/components/brand-banner";
+import { SavingsProof } from "@/components/savings-proof";
 
 export default async function HomePage({ searchParams }: { searchParams: Promise<{ c?: string }> }) {
   const { c } = await searchParams;
   const session = await getSession();
   const live = liveCouponWhere();
 
-  const [banners, featured, latest, stores, categories, saved, summaries, brands] = await Promise.all([
+  const [banners, featured, latest, stores, categories, saved, summaries, brands, savings] = await Promise.all([
     db.banner.findMany({ where: { active: true }, orderBy: { sortOrder: "asc" } }),
     db.coupon.findMany({ where: { ...live, featured: true }, include: couponCardInclude, orderBy: { updatedAt: "desc" }, take: 10 }),
     db.coupon.findMany({ where: live, include: couponCardInclude, orderBy: { createdAt: "desc" }, take: 8 }),
@@ -32,6 +41,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
     getSavedIds(session?.userId),
     storeSummaries(),
     topBrands(5),
+    savingsExamples(3),
   ]);
 
   const slides = banners.map((b) => ({ ...b, href: safeHref(b.linkUrl) }));
@@ -155,6 +165,15 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
           ))}
         </div>
       </section>
+
+      {savings.examples.length > 0 && (
+        <SavingsProof
+          examples={savings.examples}
+          bestPct={savings.bestPct}
+          offers={popular.reduce((n, s) => n + s.offers, 0)}
+          stores={popular.length}
+        />
+      )}
 
       <CouponReveal couponId={c} />
     </>
