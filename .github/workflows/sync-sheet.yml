@@ -16,4 +16,4 @@ jobs:
         run: |
           curl -sS --max-time 120 \
             -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
-            "${{ vars.SITE_URL || 'https://newcoupon.vercel.app' }}/api/cron/sync-sheet"
+            "${{ vars.SITE_URL || 'https://offers-coupon.com' }}/api/cron/sync-sheet"
