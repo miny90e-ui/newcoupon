@@ -4,7 +4,7 @@
 
 Website đang chạy dạng **Node.js Web App** trên gói Unlimited, không cần VPS:
 
-- **Trang quản lý:** hPanel → Trang web → `aqua-salamander-988026.hostingersite.com` (địa chỉ tạm, sẽ đổi thành `offers-coupon.com`).
+- **Trang quản lý:** hPanel → Trang web → `offers-coupon.com` (https://hpanel.hostinger.com/websites/offers-coupon.com).
 - **Code:** lấy từ repo GitHub công khai, nhánh `main`. Mỗi lần push, Hostinger tự build lại (khoảng 2 phút).
 - **Build:** Next.js, Node 22, lệnh `npm run build`. Lệnh này dùng `next build --webpack` vì máy chủ Hostinger có glibc cũ, không chạy được trình biên dịch gốc của Next.js. File cấu hình là `next.config.mjs`, cũng vì lý do đó.
 - **Database:** vẫn là Neon. Lấy chuỗi kết nối ở Vercel → Storage → neon-bole-field → `.env.local` (bấm Show secret).
