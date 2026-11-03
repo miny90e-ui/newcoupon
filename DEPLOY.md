@@ -1,4 +1,20 @@
-# Hướng dẫn đưa New Coupon lên GitHub và Hostinger VPS
+# Hướng dẫn đưa New Coupon lên Hostinger
+
+## Đang chạy: Hostinger Web Apps (gói Unlimited Web Hosting)
+
+Website đang chạy dạng **Node.js Web App** trên gói Unlimited, không cần VPS:
+
+- **Trang quản lý:** hPanel → Trang web → `aqua-salamander-988026.hostingersite.com` (địa chỉ tạm, sẽ đổi thành `offers-coupon.com`).
+- **Code:** lấy từ repo GitHub công khai, nhánh `main`. Mỗi lần push, Hostinger tự build lại (khoảng 2 phút).
+- **Build:** Next.js, Node 22, lệnh `npm run build`. Lệnh này dùng `next build --webpack` vì máy chủ Hostinger có glibc cũ, không chạy được trình biên dịch gốc của Next.js. File cấu hình là `next.config.mjs`, cũng vì lý do đó.
+- **Database:** vẫn là Neon. Lấy chuỗi kết nối ở Vercel → Storage → neon-bole-field → `.env.local` (bấm Show secret).
+- **Biến môi trường:** hPanel → trang web → Biến môi trường. Cần có `DATABASE_URL`, `DATABASE_URL_UNPOOLED`, `AUTH_SECRET`, `SITE_URL`, `SEED_SAMPLE=false` và `CONTACT_EMAIL`. Sau khi bấm **Áp dụng thay đổi**, Hostinger tự build lại.
+
+Phần dưới đây là cách cũ dùng VPS, giữ lại để tham khảo.
+
+---
+
+# Cách cũ: GitHub và Hostinger VPS
 
 Làm lần lượt từ trên xuống. Phần 1–5 chỉ làm **một lần**. Sau đó, mỗi lần bạn push code lên nhánh `main`, website tự cập nhật (phần 6).
 
