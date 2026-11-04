@@ -17,7 +17,8 @@ type ShopProduct = { title: string; type?: string; available: boolean; price: nu
 
 function cacheKey(link: string) {
   try {
-    return `showcase:${new URL(link).hostname.replace(/^www\./, "")}`;
+    // Bump the version when the way photos are picked changes, so every brand is looked up again.
+    return `showcase:v2:${new URL(link).hostname.replace(/^www\./, "")}`;
   } catch {
     return null;
   }
@@ -39,10 +40,17 @@ async function fetchShowcase(link: string): Promise<Showcase | null> {
       redirect: "follow",
       signal: AbortSignal.timeout(8000),
     });
+  // Best sellers, in the order the shop's own "best selling" page lists them (some pages run to a few MB
+  // before the first product); failing that, the shop's product feed.
   const res = await get("/collections/all?sort_by=best-selling");
-  if (!res.ok) return null;
-  const html = (await res.text()).slice(0, 1_500_000);
-  const handles = [...new Set([...html.matchAll(/\/products\/([a-z0-9][a-z0-9-]*)/g)].map((m) => m[1]))].slice(0, 10);
+  const html = res.ok ? (await res.text()).slice(0, 10_000_000) : "";
+  let handles = [...new Set([...html.matchAll(/\/products\/([a-z0-9][a-z0-9-]*)/g)].map((m) => m[1]))].slice(0, 10);
+  if (handles.length === 0) {
+    const feed = await get("/products.json?limit=10")
+      .then((r) => (r.ok ? (r.json() as Promise<{ products: { handle: string }[] }>) : null))
+      .catch(() => null);
+    handles = feed?.products.map((p) => p.handle) ?? [];
+  }
   const found = await Promise.all(
     handles.map((h) =>
       get(`/products/${h}.js`)
@@ -59,7 +67,9 @@ async function fetchShowcase(link: string): Promise<Showcase | null> {
   const photos = [...new Set([...products.map((p) => p.images[0]), ...products.flatMap((p) => p.images.slice(1))])].filter(still);
   if (photos.length < 3) return null;
   const cards = photos.slice(0, 3);
-  const backdrop = products[0].images.find((s) => still(s) && !cards.includes(s)) ?? photos[3] ?? photos[0];
+  // Behind them: the next best seller, else the top seller again. A main photo, since a shop's other
+  // photos are often charts or before/after shots.
+  const backdrop = products.map((p) => p.images[0]).filter((s) => still(s) && !cards.includes(s))[0] ?? cards[0];
   // The middle card is the big one: the top seller goes there.
   return { backdrop: sized(backdrop, 1100), products: [sized(cards[1], 360), sized(cards[0], 440), sized(cards[2], 360)] };
 }
