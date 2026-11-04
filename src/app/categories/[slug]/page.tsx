@@ -63,7 +63,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
       {stores.length > 0 && (
         <section className="mt-10" aria-labelledby="cat-stores">
           <h2 id="cat-stores" className="section-title">Stores</h2>
-          <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+          <div className="mt-4 grid grid-cols-3 gap-2.5 sm:gap-4 md:grid-cols-4 lg:grid-cols-6">
             {stores.map((s) => <StoreTile key={s.id} store={s} />)}
           </div>
         </section>
@@ -74,7 +74,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
         {coupons.length === 0 ? (
           <p className="card mt-4 p-8 text-center text-muted">No active offers in this category yet.</p>
         ) : (
-          <div className="mt-4 grid grid-cols-1 gap-5 min-[480px]:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+          <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-5 md:grid-cols-3 lg:grid-cols-4">
             {coupons.map((cp) => <CouponCard key={cp.id} coupon={cp} saved={saved.has(cp.id)} />)}
           </div>
         )}

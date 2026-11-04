@@ -47,7 +47,7 @@ const TIPS: { icon: LucideIcon; photo: string; title: string; body: string }[] =
     icon: BellRing,
     photo: "/tips/save.webp",
     title: "Save the coupons you'll need",
-    body: "Tap the heart on any New Coupon offer to keep it in your account, so the code is ready when you're ready to buy — before it expires.",
+    body: "Tap the heart on any Offers Coupon offer to keep it in your account, so the code is ready when you're ready to buy — before it expires.",
   },
   {
     icon: PiggyBank,
@@ -64,7 +64,7 @@ const TIPS: { icon: LucideIcon; photo: string; title: string; body: string }[] =
 ];
 
 const CHECKLIST = [
-  "Searched New Coupon for the store's latest codes",
+  "Searched Offers Coupon for the store's latest codes",
   "Checked if the code works on sale items",
   "Reached the free-shipping minimum (or know the fee)",
   "Compared the final total with another store",

@@ -57,7 +57,7 @@ export function BrandCarousel({ labels, children }: { labels: string[]; children
       onBlurCapture={() => setHovering(false)}
     >
       <div
-        className="relative h-[396px] touch-pan-y overflow-hidden [--gap:10px] sm:h-[344px] sm:[--gap:20px] lg:h-[384px]"
+        className="relative h-[196px] touch-pan-y overflow-hidden [--gap:10px] sm:h-[344px] sm:[--gap:20px] lg:h-[384px]"
         onPointerDown={(e) => (swipe.current = { x: e.clientX, y: e.clientY })}
         onPointerUp={(e) => {
           const s = swipe.current;
@@ -82,7 +82,7 @@ export function BrandCarousel({ labels, children }: { labels: string[]; children
               aria-hidden={!current}
               data-current={current}
               className={cn(
-                "group absolute left-1/2 top-3 h-[372px] w-[calc(100%-44px)] sm:h-[320px] sm:w-[calc(100%-112px)] lg:h-[360px] lg:w-[min(1160px,calc(100%-176px))]",
+                "group absolute left-1/2 top-2 h-[180px] w-[calc(100%-44px)] sm:top-3 sm:h-[320px] sm:w-[calc(100%-112px)] lg:h-[360px] lg:w-[min(1160px,calc(100%-176px))]",
                 !wrapped && "transition-transform duration-700 ease-[cubic-bezier(0.22,0.61,0.36,1)]",
                 Math.abs(d) > 1 && Math.abs(before) > 1 && "invisible"
               )}
@@ -97,7 +97,7 @@ export function BrandCarousel({ labels, children }: { labels: string[]; children
                   tabIndex={-1}
                   aria-hidden
                   onClick={() => go(i)}
-                  className="absolute inset-0 cursor-pointer rounded-[24px] bg-canvas/25 transition-colors hover:bg-transparent sm:rounded-[28px]"
+                  className="absolute inset-0 cursor-pointer rounded-[20px] bg-canvas/25 transition-colors hover:bg-transparent sm:rounded-[28px]"
                 />
               )}
             </div>
@@ -106,7 +106,7 @@ export function BrandCarousel({ labels, children }: { labels: string[]; children
       </div>
 
       {n > 1 && (
-        <div className="mt-1 flex items-center justify-center">
+        <div className="flex items-center justify-center sm:mt-1">
           <button
             type="button"
             onClick={() => step(-1)}

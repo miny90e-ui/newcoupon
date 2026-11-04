@@ -39,8 +39,8 @@ export function BlackFridayHero({ starts, ends, offers }: { starts: Date; ends: 
   const day = starts.toLocaleDateString("en-US", { month: "short", day: "numeric", timeZone: "UTC" });
 
   return (
-    <section className="container-page pt-5 sm:pt-6">
-      <div className="relative isolate overflow-hidden rounded-[24px] bg-night px-4 pb-7 pt-6 text-center text-white sm:px-10 sm:pt-7">
+    <section className="container-page pt-4 sm:pt-6">
+      <div className="relative isolate overflow-hidden rounded-[20px] bg-night px-4 pb-6 pt-4 text-center text-white sm:rounded-[24px] sm:px-10 sm:pb-7 sm:pt-7">
         {/* Backdrop: red and gold glow, outlined BLACK FRIDAY lettering, sparkles, hazard-tape edge */}
         <div aria-hidden className="absolute inset-0 -z-10">
           <div className="absolute -left-24 -top-24 size-80 rounded-full bg-[#ff3b3b]/35 blur-3xl" />
@@ -67,11 +67,11 @@ export function BlackFridayHero({ starts, ends, offers }: { starts: Date; ends: 
           </p>
           <Countdown starts={starts.getTime()} ends={ends.getTime()} />
         </div>
-        <h1 className="mx-auto mt-3 max-w-4xl text-[24px] font-extrabold leading-tight tracking-tight text-white sm:text-[30px] lg:text-[34px]">
+        <h1 className="mx-auto mt-2.5 max-w-4xl text-[22px] font-extrabold leading-tight tracking-tight text-white sm:mt-3 sm:text-[30px] lg:text-[34px]">
           Black Friday&apos;s <span className="text-gold">best coupons</span> are right here
         </h1>
-        <p className="mx-auto mt-1.5 max-w-3xl text-sm text-white/70">
-          The biggest sale of the year, every code checked by our team.{" "}
+        <p className="mx-auto mt-1.5 max-w-3xl text-xs text-white/70 sm:text-sm">
+          <span className="hidden sm:inline">The biggest sale of the year, every code checked by our team. </span>
           <Link href="/disclosure" className="underline underline-offset-2 hover:text-white">
             We may earn a commission
           </Link>{" "}

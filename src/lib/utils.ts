@@ -4,7 +4,7 @@ export function cn(...inputs: ClassValue[]) {
   return clsx(inputs);
 }
 
-export const SITE_NAME = "New Coupon";
+export const SITE_NAME = "Offers Coupon";
 
 /** Public site address: SITE_URL if set, else Vercel's production domain, else localhost. */
 export function siteUrl(path = "") {

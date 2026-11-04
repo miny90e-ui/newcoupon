@@ -42,64 +42,70 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
 
   return (
     <>
-      {/* Top brands by coupon use; the admin banners / plain hero only show when no brand has a live offer */}
-      {brands.length > 0 ? (
-        <div className="pt-3 sm:pt-5">
-          <BrandCarousel labels={brands.map((b) => b.name)}>
-            {brands.map((b, i) => (
-              <BrandBanner key={b.slug} brand={b} rank={i + 1} eager={i < 2} />
-            ))}
-          </BrandCarousel>
-        </div>
-      ) : (
-        <div className="container-page pt-6 sm:pt-8">
-          {slides.length > 0 ? (
-            <HeroCarousel slides={slides} />
+      {/* On phones the title comes first, like a plain list page; from sm up the brand banners lead */}
+      <div className="flex flex-col">
+        {/* Top brands by coupon use; the admin banners / plain hero only show when no brand has a live offer */}
+        {brands.length > 0 ? (
+          <div className="pt-4 sm:pt-5">
+            <BrandCarousel labels={brands.map((b) => b.name)}>
+              {brands.map((b, i) => (
+                <BrandBanner key={b.slug} brand={b} rank={i + 1} eager={i < 2} />
+              ))}
+            </BrandCarousel>
+          </div>
+        ) : (
+          <div className="container-page pt-6 sm:pt-8">
+            {slides.length > 0 ? (
+              <HeroCarousel slides={slides} />
+            ) : (
+              <section className="rounded-[24px] bg-brand px-8 py-14 text-white sm:px-14">
+                <h2 className="text-3xl font-extrabold text-white sm:text-5xl">Save on everything you buy</h2>
+                <p className="mt-3 text-white/80">Coupon codes and deals from stores across every category.</p>
+              </section>
+            )}
+          </div>
+        )}
+
+        {/* Title panel; from 1 November to the end of Cyber Monday it wears the Black Friday look */}
+        <div className="order-first sm:order-none">
+          {friday ? (
+            <BlackFridayHero starts={friday.starts} ends={friday.ends} offers={popular.filter((s) => s.bestOffer).slice(0, 2)} />
           ) : (
-            <section className="rounded-[24px] bg-brand px-8 py-14 text-white sm:px-14">
-              <h2 className="text-3xl font-extrabold text-white sm:text-5xl">Save on everything you buy</h2>
-              <p className="mt-3 text-white/80">Coupon codes and deals from stores across every category.</p>
+            <section className="container-page pt-6">
+              <div className="relative isolate rounded-[24px] px-2 text-center sm:bg-brand-tint sm:px-10 sm:py-7">
+                <div
+                  aria-hidden
+                  className="absolute inset-0 -z-10 hidden overflow-hidden rounded-[24px] bg-[radial-gradient(rgb(12_122_128/0.16)_1px,transparent_1px)] [background-size:18px_18px] [mask-image:radial-gradient(ellipse_at_center,black_20%,transparent_75%)] sm:block"
+                />
+                <FloatingOffers offers={popular.filter((s) => s.bestOffer).slice(0, 2)} />
+
+                <p className="hidden items-center gap-1.5 rounded-full bg-white px-3 py-1 text-xs font-bold text-brand shadow-[var(--shadow-card)] sm:inline-flex">
+                  <BadgeCheck className="size-3.5" aria-hidden /> Every code checked by our team
+                </p>
+                <h1 className="mx-auto max-w-4xl text-[24px] font-extrabold leading-tight tracking-tight sm:mt-2.5 sm:text-[28px] lg:text-[32px]">
+                  Verified coupons from the stores you shop
+                </h1>
+                <p className="mx-auto mt-1.5 max-w-2xl text-sm text-muted">
+                  When you buy through links on our site,{" "}
+                  <Link href="/disclosure" className="underline underline-offset-2 hover:text-ink">
+                    we may earn a commission
+                  </Link>
+                  .
+                </p>
+              </div>
             </section>
           )}
         </div>
-      )}
-
-      {/* Title panel; from 1 November to the end of Cyber Monday it wears the Black Friday look */}
-      {friday ? (
-        <BlackFridayHero starts={friday.starts} ends={friday.ends} offers={popular.filter((s) => s.bestOffer).slice(0, 2)} />
-      ) : (
-        <section className="container-page pt-5 sm:pt-6">
-          <div className="relative isolate rounded-[24px] bg-brand-tint px-4 py-6 text-center sm:px-10 sm:py-7">
-            <div
-              aria-hidden
-              className="absolute inset-0 -z-10 overflow-hidden rounded-[24px] bg-[radial-gradient(rgb(12_122_128/0.16)_1px,transparent_1px)] [background-size:18px_18px] [mask-image:radial-gradient(ellipse_at_center,black_20%,transparent_75%)]"
-            />
-            <FloatingOffers offers={popular.filter((s) => s.bestOffer).slice(0, 2)} />
-
-            <p className="inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1 text-xs font-bold text-brand shadow-[var(--shadow-card)]">
-              <BadgeCheck className="size-3.5" aria-hidden /> Every code checked by our team
-            </p>
-            <h1 className="mx-auto mt-2.5 max-w-4xl text-[22px] font-extrabold leading-tight tracking-tight sm:text-[28px] lg:text-[32px]">
-              Verified coupons from the stores you shop
-            </h1>
-            <p className="mx-auto mt-1.5 max-w-2xl text-sm text-muted">
-              When you buy through links on our site,{" "}
-              <Link href="/disclosure" className="underline underline-offset-2 hover:text-ink">
-                we may earn a commission
-              </Link>
-              .
-            </p>
-          </div>
-        </section>
-      )}
+      </div>
 
       {featured.length > 0 && (
-        <section className="container-page pt-14" aria-labelledby="featured-title">
+        <section className="container-page pt-8 sm:pt-14" aria-labelledby="featured-title">
           <div className="flex items-baseline gap-4">
             <h2 id="featured-title" className="section-title">Featured Deals</h2>
             <Link href="/deals" className="link text-sm">View all</Link>
           </div>
-          <div className="mt-6 grid grid-cols-1 gap-5 min-[480px]:grid-cols-2 md:grid-cols-3 xl:grid-cols-5">
+          {/* Phones show the first six; the rest are a tap away on "View all" */}
+          <div className="mt-4 grid grid-cols-1 gap-3 max-sm:[&>*:nth-child(n+7)]:hidden sm:mt-6 sm:grid-cols-2 sm:gap-5 md:grid-cols-3 xl:grid-cols-5">
             {featured.map((cp) => (
               <CouponCard key={cp.id} coupon={cp} saved={saved.has(cp.id)} />
             ))}
@@ -108,12 +114,12 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
       )}
 
       {stores.length > 0 && (
-        <section className="container-page pt-16" aria-labelledby="stores-title">
+        <section className="container-page pt-10 sm:pt-16" aria-labelledby="stores-title">
           <div className="flex items-baseline gap-4">
             <h2 id="stores-title" className="section-title">Popular Stores</h2>
             <Link href="/stores" className="link text-sm">All stores</Link>
           </div>
-          <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+          <div className="mt-4 grid grid-cols-3 gap-2.5 sm:mt-6 sm:gap-4 md:grid-cols-4 lg:grid-cols-6">
             {stores.map((s) => (
               <StoreTile key={s.id} store={s} />
             ))}
@@ -122,9 +128,9 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
       )}
 
       {categories.length > 0 && (
-        <section className="container-page pt-16" aria-labelledby="cat-title">
+        <section className="container-page pt-10 sm:pt-16" aria-labelledby="cat-title">
           <h2 id="cat-title" className="section-title">Shop by Category</h2>
-          <ul className="mt-6 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+          <ul className="mt-4 sm:mt-6 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
             {categories.map((cat) => (
               <li key={cat.id}>
                 <CategoryCard category={cat} />
@@ -135,9 +141,9 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
       )}
 
       {latest.length > 0 && (
-        <section className="container-page pt-16" aria-labelledby="latest-title">
+        <section className="container-page pt-10 sm:pt-16" aria-labelledby="latest-title">
           <h2 id="latest-title" className="section-title">Just Added</h2>
-          <div className="mt-6 grid grid-cols-1 gap-5 min-[480px]:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+          <div className="mt-4 grid grid-cols-1 gap-3 max-sm:[&>*:nth-child(n+5)]:hidden sm:mt-6 sm:grid-cols-2 sm:gap-5 md:grid-cols-3 lg:grid-cols-4">
             {latest.map((cp) => (
               <CouponCard key={cp.id} coupon={cp} saved={saved.has(cp.id)} />
             ))}
@@ -145,8 +151,8 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
         </section>
       )}
 
-      <section className="container-page pt-16" aria-label="How to use a coupon code">
-        <div className="overflow-hidden rounded-[24px] bg-brand px-5 py-8 sm:px-10 sm:py-10">
+      <section className="container-page pt-10 sm:pt-16" aria-label="How to use a coupon code">
+        <div className="overflow-hidden rounded-[24px] bg-brand px-5 py-7 sm:px-10 sm:py-10">
           <CouponHowTo photo="/tips/cart.webp" kicker="Quick guide · 3 steps" />
         </div>
       </section>

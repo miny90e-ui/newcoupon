@@ -4,7 +4,7 @@ import { StoresDirectory } from "@/components/stores-directory";
 
 export const metadata: Metadata = {
   title: "All Stores A–Z",
-  description: "Browse every store on New Coupon and find their latest coupon codes and deals.",
+  description: "Browse every store on Offers Coupon and find their latest coupon codes and deals.",
   alternates: { canonical: "/stores" },
 };
 

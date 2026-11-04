@@ -36,7 +36,7 @@ async function fetchShowcase(link: string): Promise<Showcase | null> {
   const origin = new URL(link).origin;
   const get = (path: string) =>
     fetch(`${origin}${path}`, {
-      headers: { "User-Agent": "Mozilla/5.0 (compatible; NewCouponBot/1.0; +https://offers-coupon.com)" },
+      headers: { "User-Agent": "Mozilla/5.0 (compatible; OffersCouponBot/1.0; +https://offers-coupon.com)" },
       redirect: "follow",
       signal: AbortSignal.timeout(8000),
     });

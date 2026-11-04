@@ -43,7 +43,7 @@ export function MobileMenu({ signedIn, isAdmin }: { signedIn: boolean; isAdmin: 
         {open ? <X className="size-6" aria-hidden /> : <Menu className="size-6" aria-hidden />}
       </button>
       {open && (
-        <nav id="mobile-nav" aria-label="Mobile" className="absolute inset-x-0 top-16 border-t border-white/15 bg-brand pb-4 shadow-lg">
+        <nav id="mobile-nav" aria-label="Mobile" className="absolute inset-x-0 top-14 sm:top-16 border-t border-white/15 bg-brand pb-4 shadow-lg">
           <ul className="container-page flex flex-col">
             {links.map((l) => (
               <li key={l.href}>

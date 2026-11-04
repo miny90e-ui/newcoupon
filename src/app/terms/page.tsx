@@ -9,8 +9,8 @@ export default function TermsPage() {
       <p className="rounded-lg bg-brand-tint p-3 text-sm">
         Template text — have it reviewed for your business before launch.
       </p>
-      <h2>Using New Coupon</h2>
-      <p>New Coupon lists coupon codes and deals offered by third-party stores. Using the site is free.</p>
+      <h2>Using Offers Coupon</h2>
+      <p>Offers Coupon lists coupon codes and deals offered by third-party stores. Using the site is free.</p>
       <h2>Offers are set by stores</h2>
       <p>
         Stores set and may change or end their offers at any time. We try to keep listings accurate but cannot

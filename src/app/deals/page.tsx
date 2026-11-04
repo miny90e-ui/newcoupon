@@ -52,7 +52,7 @@ export default async function DealsPage({ searchParams }: { searchParams: Promis
           </Link>
         ))}
       </div>
-      <div className="mt-6 grid grid-cols-1 gap-5 min-[480px]:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+      <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-5 md:grid-cols-3 lg:grid-cols-4">
         {coupons.map((cp) => <CouponCard key={cp.id} coupon={cp} saved={saved.has(cp.id)} />)}
       </div>
       {pages > 1 && (

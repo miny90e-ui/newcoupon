@@ -46,7 +46,7 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
       {stores.length > 0 && (
         <section className="mt-10" aria-labelledby="s-stores">
           <h2 id="s-stores" className="section-title">Stores</h2>
-          <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+          <div className="mt-4 grid grid-cols-3 gap-2.5 sm:gap-4 md:grid-cols-4 lg:grid-cols-6">
             {stores.map((s) => <StoreTile key={s.id} store={s} />)}
           </div>
         </section>
@@ -54,7 +54,7 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
       {coupons.length > 0 && (
         <section className="mt-10" aria-labelledby="s-coupons">
           <h2 id="s-coupons" className="section-title">Coupons &amp; deals</h2>
-          <div className="mt-4 grid grid-cols-1 gap-5 min-[480px]:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+          <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-5 md:grid-cols-3 lg:grid-cols-4">
             {coupons.map((cp) => <CouponCard key={cp.id} coupon={cp} saved={saved.has(cp.id)} />)}
           </div>
         </section>

@@ -16,7 +16,7 @@ export async function Header() {
   const user = await getCurrentUser();
   return (
     <header className="sticky top-0 z-40 bg-brand text-white shadow-md">
-      <div className="container-page flex h-16 items-center gap-4 lg:gap-6">
+      <div className="container-page flex h-14 items-center gap-4 sm:h-16 lg:gap-6">
         <Logo light />
         <nav aria-label="Main" className="hidden md:block">
           <ul className="flex items-center gap-1">

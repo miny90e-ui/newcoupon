@@ -35,7 +35,7 @@ export function Footer() {
         <div className="lg:col-span-2">
           <Logo light />
           <p className="mt-4 max-w-sm text-sm leading-relaxed">
-            New Coupon collects coupon codes and deals from stores across every category, so you can pay less
+            Offers Coupon collects coupon codes and deals from stores across every category, so you can pay less
             for the things you already planned to buy.
           </p>
         </div>
@@ -56,7 +56,7 @@ export function Footer() {
       </div>
       <div className="border-t border-white/10">
         <div className="container-page flex flex-col gap-2 py-5 text-xs sm:flex-row sm:justify-between">
-          <p>© {new Date().getFullYear()} New Coupon. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} Offers Coupon. All rights reserved.</p>
           <p>
             We may earn a commission when you shop through our links.{" "}
             <Link href="/disclosure" className="underline underline-offset-2 hover:text-white">

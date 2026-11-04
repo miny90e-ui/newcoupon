@@ -1,4 +1,4 @@
-# New Coupon
+# Offers Coupon
 
 Coupon and deals website for stores in every category, built with Next.js 16, PostgreSQL (Prisma) and Tailwind CSS 4.
 

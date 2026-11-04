@@ -42,7 +42,7 @@ export function StoresDirectory({ stores }: { stores: DirectoryStore[] }) {
 
   return (
     <>
-      <div className="sticky top-16 z-20 -mx-4 mt-8 border-y border-line bg-canvas/95 px-4 py-3 backdrop-blur sm:mx-0 sm:rounded-2xl sm:border sm:bg-surface/95 sm:px-4 sm:shadow-[var(--shadow-card)]">
+      <div className="sticky top-14 z-20 sm:top-16 -mx-4 mt-8 border-y border-line bg-canvas/95 px-4 py-3 backdrop-blur sm:mx-0 sm:rounded-2xl sm:border sm:bg-surface/95 sm:px-4 sm:shadow-[var(--shadow-card)]">
         <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
           <div className="relative lg:w-64">
             <label htmlFor="store-filter" className="sr-only">Filter stores</label>

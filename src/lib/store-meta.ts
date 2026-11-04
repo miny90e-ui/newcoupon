@@ -61,7 +61,7 @@ export async function storeMeta(link: string | null | undefined): Promise<StoreM
   let result: StoreMeta | null = null;
   try {
     const res = await fetch(`${origin}/`, {
-      headers: { "User-Agent": "Mozilla/5.0 (compatible; NewCouponBot/1.0; +https://newcoupon.vercel.app)" },
+      headers: { "User-Agent": "Mozilla/5.0 (compatible; OffersCouponBot/1.0; +https://offers-coupon.com)" },
       redirect: "follow",
       signal: AbortSignal.timeout(8000),
     });

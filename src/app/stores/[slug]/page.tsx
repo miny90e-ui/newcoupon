@@ -20,7 +20,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const title = `${store.name} Coupons & Promo Codes — ${monthYear()}`;
   return {
     title,
-    description: store.description ?? `The latest ${store.name} coupon codes, promo codes and deals, verified by New Coupon.`,
+    description: store.description ?? `The latest ${store.name} coupon codes, promo codes and deals, verified by Offers Coupon.`,
     alternates: { canonical: `/stores/${slug}` },
     openGraph: { title },
   };
@@ -150,7 +150,7 @@ export default async function StorePage({ params, searchParams }: Props) {
           {related.length > 0 && (
             <section className="mt-12" aria-labelledby="related-title">
               <h2 id="related-title" className="section-title">Similar stores</h2>
-              <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3 xl:grid-cols-6">
+              <div className="mt-4 grid grid-cols-3 gap-2.5 sm:gap-4 xl:grid-cols-6">
                 {related.map((s) => <StoreTile key={s.id} store={s} />)}
               </div>
             </section>

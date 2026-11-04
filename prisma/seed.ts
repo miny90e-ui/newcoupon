@@ -126,8 +126,8 @@ async function main() {
         slug: s.slug,
         featured: s.featured,
         website: `https://example.com/${s.slug}`,
-        affiliateUrl: `https://example.com/${s.slug}?ref=newcoupon`,
-        description: `Find the latest ${s.name} coupon codes, promo codes and deals, checked by the New Coupon team.`,
+        affiliateUrl: `https://example.com/${s.slug}?ref=offerscoupon`,
+        description: `Find the latest ${s.name} coupon codes, promo codes and deals, checked by the Offers Coupon team.`,
         categoryId: category?.id,
       },
     });

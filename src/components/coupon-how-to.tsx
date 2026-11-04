@@ -5,7 +5,7 @@ import { Check, ClipboardCheck, MousePointer2, MousePointerClick, ShoppingBag } 
 import { cn } from "@/lib/utils";
 
 const STEPS = [
-  { icon: MousePointerClick, title: "Click “Get Code”", body: "Pick an offer on New Coupon. The store opens in a new tab." },
+  { icon: MousePointerClick, title: "Click “Get Code”", body: "Pick an offer on Offers Coupon. The store opens in a new tab." },
   { icon: ClipboardCheck, title: "Copy the code", body: "Tap Copy — the code is saved to your clipboard." },
   { icon: ShoppingBag, title: "Paste it at checkout", body: "Find the promo / discount box, paste, apply. Done." },
 ];
@@ -69,7 +69,7 @@ export function CouponHowTo({ photo, kicker = "Start here · Tip #1" }: { photo:
       </div>
 
       {/* Photo + animated demo (decorative; the steps above carry the meaning) */}
-      <div aria-hidden className="relative">
+      <div aria-hidden className="relative hidden sm:block">
         <div className="relative aspect-[5/4] overflow-hidden rounded-2xl sm:aspect-[16/11]">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={photo} alt="" width={640} height={400} className="size-full object-cover" />

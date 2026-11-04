@@ -7,7 +7,7 @@ export default function DisclosurePage() {
   return (
     <ProsePage title="Affiliate disclosure">
       <p>
-        New Coupon is free to use because we take part in affiliate programmes. When you click a link to a store on our
+        Offers Coupon is free to use because we take part in affiliate programmes. When you click a link to a store on our
         site and then make a purchase, we may earn a commission from that store.
       </p>
       <ul>
