@@ -71,8 +71,10 @@ export async function storeMeta(link: string | null | undefined): Promise<StoreM
       const title = decode(html.match(/<title[^>]*>([^<]*)<\/title>/i)?.[1] ?? "");
       const rawName = meta(html, "property", "og:site_name") || title.split(/\s[-|–—:]\s/)[0];
       const name = rawName?.replace(/[®™©]/g, "").trim().slice(0, 60) || null;
-      const ldLogo = html.match(/"logo"\s*:\s*(?:\{[^}]*?"url"\s*:\s*)?"([^"]+)"/)?.[1];
-      const logo = absolute(ldLogo || meta(html, "property", "og:image") || meta(html, "name", "twitter:image"), finalOrigin);
+      // Some shops write a broken logo link here (e.g. "https:files\/logo.png"); only a real link counts.
+      const ldLogo = html.match(/"logo"\s*:\s*(?:\{[^}]*?"url"\s*:\s*)?"([^"]+)"/)?.[1]?.replace(/\\\//g, "/");
+      const ldLogoOk = ldLogo && /^(https?:)?\/\/|^\/[^/]/.test(ldLogo) ? ldLogo : null;
+      const logo = absolute(ldLogoOk || meta(html, "property", "og:image") || meta(html, "name", "twitter:image"), finalOrigin);
       const description = (meta(html, "name", "description") || meta(html, "property", "og:description"))?.slice(0, 400) ?? null;
       result = { name, logo, description, origin: finalOrigin };
     }
