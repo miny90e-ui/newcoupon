@@ -17,7 +17,7 @@ export function Logo({ light = false }: { light?: boolean }) {
         <span className={`block text-[17px] font-extrabold tracking-tight sm:text-lg ${light ? "text-white" : "text-ink"}`}>
           Offers Coupon
         </span>
-        <span className={`hidden text-[11px] font-medium sm:block ${light ? "text-white/70" : "text-muted"}`}>
+        <span className={`block text-[11px] font-medium ${light ? "text-white/70" : "text-muted"}`}>
           Verified deals, every day
         </span>
       </span>

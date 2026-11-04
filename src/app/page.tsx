@@ -119,7 +119,8 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
             <h2 id="stores-title" className="section-title">Popular Stores</h2>
             <Link href="/stores" className="link text-sm">All stores</Link>
           </div>
-          <div className="mt-4 grid grid-cols-3 gap-2.5 sm:mt-6 sm:gap-4 md:grid-cols-4 lg:grid-cols-6">
+          {/* Three full rows at most below md (3 across); the rest are on "All stores" */}
+          <div className="mt-4 grid grid-cols-3 gap-2.5 max-md:[&>*:nth-child(n+10)]:hidden sm:mt-6 sm:gap-4 md:grid-cols-4 lg:grid-cols-6">
             {stores.map((s) => (
               <StoreTile key={s.id} store={s} />
             ))}
