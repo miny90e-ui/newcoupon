@@ -1,6 +1,7 @@
 import "server-only";
 import type { Prisma } from "@prisma/client";
 import { db } from "./db";
+import { brandShowcases } from "./store-showcase";
 
 /** Coupons that are switched on, already started and not expired. */
 export function liveCouponWhere(): Prisma.CouponWhereInput {
@@ -76,6 +77,8 @@ export async function topBrands(limit = 5) {
         name: true,
         slug: true,
         logoUrl: true,
+        website: true,
+        affiliateUrl: true,
         featured: true,
         category: { select: { name: true, slug: true } },
         _count: { select: { coupons: { where: live } } },
@@ -91,10 +94,12 @@ export async function topBrands(limit = 5) {
   ]);
   const uses = new Map(usage.map((u) => [u.storeId, u._sum.clicks ?? 0]));
 
-  return stores
+  const top = stores
     .map(({ coupons, _count, ...s }) => ({ ...s, coupon: coupons[0], offers: _count.coupons, uses: uses.get(s.id) ?? 0 }))
     .sort((a, b) => b.uses - a.uses || b.offers - a.offers || Number(b.featured) - Number(a.featured) || a.name.localeCompare(b.name))
     .slice(0, limit);
+  const showcases = await brandShowcases(top);
+  return top.map((b) => ({ ...b, showcase: showcases.get(b.slug) ?? null }));
 }
 
 export type TopBrand = Awaited<ReturnType<typeof topBrands>>[number];

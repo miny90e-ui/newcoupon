@@ -3,6 +3,7 @@ import { revalidatePath } from "next/cache";
 import { db } from "./db";
 import { GOOGLE_SHEET_URL } from "@/config/site";
 import { importXlsx } from "./importer";
+import { refreshShowcases } from "./store-showcase";
 
 const URL_KEY = "google_sheet_url";
 const STATUS_KEY = "google_sheet_last_sync";
@@ -103,6 +104,8 @@ async function runSync(): Promise<SyncStatus> {
       removed = ` Removed: ${deleted.count} stores, ${hidden.count} coupons.`;
     }
     status = { at: new Date().toISOString(), ok: true, message: `${stores.msg} ${coupons.msg}${removed}`, errors: errors.slice(0, 20) };
+    // New brands get their own product photos for the home page banner.
+    await refreshShowcases().catch((e) => console.error("Banner photos failed", e));
     try {
       revalidatePath("/", "layout");
     } catch {

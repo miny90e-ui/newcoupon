@@ -1,21 +1,21 @@
 import Link from "next/link";
 import { BadgeCheck, Flame } from "lucide-react";
-import { BRAND_SHOWCASE, type Showcase } from "@/config/brand-showcase";
+import type { Showcase } from "@/config/brand-showcase";
 import type { TopBrand } from "@/lib/queries";
 import { cn } from "@/lib/utils";
 import { RevealTrigger } from "./reveal-trigger";
 import { StoreLogo } from "./store-logo";
 
-// Bright lifestyle photo per category for the banners (free Unsplash licence), 1120px wide.
+// Stock photo per category, only for a brand whose shop photos can't be read (free Unsplash licence), 1120px wide.
 const PHOTOS = new Set(["beauty", "fashion", "electronics", "travel", "home-garden", "food-dining", "sports-outdoors", "health-wellness"]);
 
-/** One home page banner for a top brand: category photo, logo, its most-used offer and Get Code. */
+/** One home page banner for a top brand: its own product photos, logo, its most-used offer and Get Code. */
 export function BrandBanner({ brand, rank, eager }: { brand: TopBrand; rank: number; eager?: boolean }) {
   const { coupon } = brand;
   const isCode = coupon.type === "CODE";
   const slug = brand.category?.slug;
   const photo = `/banners/${slug && PHOTOS.has(slug) ? slug : "shopping"}.webp`;
-  const showcase = BRAND_SHOWCASE[brand.slug];
+  const { showcase } = brand;
   const headline = coupon.discountLabel ?? (isCode ? "Promo code" : "Special deal");
 
   return (
