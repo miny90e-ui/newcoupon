@@ -55,7 +55,7 @@ export async function syncFromSheet(): Promise<SyncStatus> {
 }
 
 /** Syncs in the background when the last sync is older than maxAgeMs. Called after page responses. */
-export async function syncIfStale(maxAgeMs = 10 * 60_000) {
+export async function syncIfStale(maxAgeMs = 2 * 60_000) {
   if (!(await getSheetUrl())) return;
   const last = await getLastSync();
   if (last && Date.now() - new Date(last.at).getTime() < maxAgeMs) return;

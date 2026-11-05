@@ -30,7 +30,7 @@ export const viewport: Viewport = {
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  // Keeps the site in step with the Google Sheet: after a page is sent, re-sync if the last sync is over 10 minutes old.
+  // Keeps the site in step with the Google Sheet: after a page is sent, re-sync if the last sync is over 2 minutes old.
   after(() => syncIfStale().catch((e) => console.error("Sheet sync failed", e)));
   return (
     <html lang="en" className={jakarta.variable}>
