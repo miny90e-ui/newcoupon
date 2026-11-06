@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ExternalLink } from "lucide-react";
+import { Flame } from "lucide-react";
 import { db } from "@/lib/db";
 import { couponCardInclude, getSavedIds, liveCouponWhere } from "@/lib/queries";
 import { getSession } from "@/lib/session";
+import { shopItems } from "@/lib/store-showcase";
+import { STORE_INTROS } from "@/config/store-intros";
 import { monthYear, siteUrl } from "@/lib/utils";
 import { StoreLogo } from "@/components/store-logo";
 import { CouponRow } from "@/components/coupon-row";
@@ -35,7 +37,7 @@ export default async function StorePage({ params, searchParams }: Props) {
   const live = liveCouponWhere();
   const typeFilter = type === "code" ? { type: "CODE" as const } : type === "deal" ? { type: "DEAL" as const } : {};
 
-  const [coupons, expired, related, saved, counts] = await Promise.all([
+  const [coupons, expired, related, saved, counts, items] = await Promise.all([
     db.coupon.findMany({
       where: { ...live, storeId: store.id, ...typeFilter },
       include: couponCardInclude,
@@ -52,7 +54,9 @@ export default async function StorePage({ params, searchParams }: Props) {
       : Promise.resolve([]),
     getSavedIds(session?.userId),
     db.coupon.groupBy({ by: ["type"], where: { ...live, storeId: store.id }, _count: true }),
+    shopItems(store),
   ]);
+  const intro = STORE_INTROS[store.slug] ?? store.description;
 
   const nCodes = counts.find((x) => x.type === "CODE")?._count ?? 0;
   const nDeals = counts.find((x) => x.type === "DEAL")?._count ?? 0;
@@ -85,24 +89,37 @@ export default async function StorePage({ params, searchParams }: Props) {
       </nav>
 
       <div className="mt-6 grid gap-8 lg:grid-cols-[300px_1fr]">
-        <aside className="space-y-6">
-          <div className="card flex flex-col items-center p-6 text-center">
-            <StoreLogo name={store.name} logoUrl={store.logoUrl} className="size-28 text-3xl" />
-            <a href={`/out/${store.slug}`} target="_blank" rel="nofollow sponsored noopener" className="btn-ink mt-5 w-full">
-              Visit {store.name} <ExternalLink className="size-4" aria-hidden />
-            </a>
+        <aside className="min-w-0 space-y-6">
+          <div className="card flex flex-col items-center p-5 text-center">
+            <StoreLogo name={store.name} logoUrl={store.logoUrl} className="size-20 text-2xl lg:size-28 lg:text-3xl" />
+            {intro && <p className="mt-4 text-sm leading-relaxed text-body">{intro}</p>}
+            {items.length > 0 && (
+              <section aria-labelledby="best-sellers" className="mt-5 w-full text-left">
+                <h2 id="best-sellers" className="flex items-center gap-1.5 text-sm font-extrabold">
+                  <Flame className="size-4 text-brand" aria-hidden />
+                  {store.name} best sellers
+                </h2>
+                {/* A strip to swipe on phones, a grid in the desktop sidebar. */}
+                <ul className="-mx-5 mt-2.5 flex snap-x gap-2.5 overflow-x-auto px-5 pb-1 [scrollbar-width:none] lg:mx-0 lg:grid lg:grid-cols-2 lg:overflow-visible lg:px-0">
+                  {items.map((it) => (
+                    <li key={it.image} className="w-32 shrink-0 snap-start overflow-hidden rounded-xl bg-brand-tint lg:w-auto">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={it.image} alt={it.title} loading="lazy" className="aspect-square w-full bg-white object-contain p-1" />
+                      <div className="p-2">
+                        <p className="line-clamp-2 text-xs font-semibold leading-snug text-ink">{it.title}</p>
+                        {it.price && <p className="mt-0.5 text-xs font-bold text-brand">{it.price}</p>}
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            )}
             {store.category && (
-              <Link href={`/categories/${store.category.slug}`} className="mt-3 text-sm text-muted hover:text-ink">
+              <Link href={`/categories/${store.category.slug}`} className="mt-4 text-sm text-muted hover:text-ink">
                 More {store.category.name} stores
               </Link>
             )}
           </div>
-          {store.description && (
-            <div className="card p-6">
-              <h2 className="text-base font-bold">About {store.name}</h2>
-              <p className="mt-2 text-sm leading-relaxed text-muted">{store.description}</p>
-            </div>
-          )}
         </aside>
 
         <div className="min-w-0">

@@ -13,12 +13,12 @@ const PER_SYNC = 4;
 // Not products to show off: add-ons, gift cards, crude slogans.
 const SKIP = /gift ?card|protection|insurance|warranty|worry-free|\b(fuck|shit|bitch|cunt)|\b(ass|dick|suck|damn)\b/i;
 
-type ShopProduct = { title: string; type?: string; available: boolean; price: number; images?: string[] };
+type ShopProduct = { title: string; type?: string; available: boolean; price: number; price_varies?: boolean; images?: string[] };
 
-function cacheKey(link: string) {
+// Bump a version when the way photos or products are picked changes, so every brand is looked up again.
+function cacheKey(link: string, kind = "showcase:v2") {
   try {
-    // Bump the version when the way photos are picked changes, so every brand is looked up again.
-    return `showcase:v2:${new URL(link).hostname.replace(/^www\./, "")}`;
+    return `${kind}:${new URL(link).hostname.replace(/^www\./, "")}`;
   } catch {
     return null;
   }
@@ -32,7 +32,8 @@ function sized(src: string, width: number) {
   return u.toString();
 }
 
-async function fetchShowcase(link: string): Promise<Showcase | null> {
+/** The shop's best sellers that are in stock and worth showing, best first. */
+async function bestSellers(link: string) {
   const origin = new URL(link).origin;
   const get = (path: string) =>
     fetch(`${origin}${path}`, {
@@ -62,6 +63,11 @@ async function fetchShowcase(link: string): Promise<Showcase | null> {
     (p): p is ShopProduct & { images: string[] } =>
       !!p?.available && p.price >= 500 && !!p.images?.length && !SKIP.test(`${p.title} ${p.type ?? ""}`)
   );
+  return { get, products };
+}
+
+async function fetchShowcase(link: string): Promise<Showcase | null> {
+  const { products } = await bestSellers(link);
   const still = (s: string) => !/\.gif(\?|$)/i.test(s);
   // Each best seller's main photo first; a shop with only one or two products adds more photos of them.
   const photos = [...new Set([...products.map((p) => p.images[0]), ...products.flatMap((p) => p.images.slice(1))])].filter(still);
@@ -108,4 +114,64 @@ export async function brandShowcases(stores: { slug: string; website: string | n
       return [s.slug, BRAND_SHOWCASE[s.slug] ?? (read && "products" in read ? read : null)];
     })
   );
+}
+
+// The best sellers on a store's page: name, photo and price, from the shop itself, cached for a week.
+
+export type ShopItem = { title: string; image: string; price: string | null };
+const ITEMS = "items:v1";
+
+async function fetchShopItems(link: string): Promise<ShopItem[] | null> {
+  const { get, products } = await bestSellers(link);
+  if (products.length === 0) return null;
+  // Prices only when the shop answers in US dollars, so a price never shows in the wrong currency.
+  const cart = await get("/cart.js")
+    .then((r) => (r.ok ? (r.json() as Promise<{ currency?: string }>) : null))
+    .catch(() => null);
+  const usd = cart?.currency === "USD";
+  return products.slice(0, 6).map((p) => ({
+    title: p.title,
+    image: sized(p.images[0], 360),
+    price: usd ? `${p.price_varies ? "From " : ""}$${(p.price / 100).toFixed(2).replace(/\.00$/, "")}` : null,
+  }));
+}
+
+async function lookUpItems(key: string, link: string) {
+  const items = await fetchShopItems(link).catch(() => null);
+  const value = JSON.stringify(items ?? { failed: true });
+  await db.setting.upsert({ where: { key }, update: { value }, create: { key, value } });
+  return items;
+}
+
+/** A store's best sellers, from the cache; a store looked up for the first time waits at most a few seconds. */
+export async function shopItems(store: { website: string | null; affiliateUrl: string }): Promise<ShopItem[]> {
+  const link = store.website || store.affiliateUrl;
+  const key = cacheKey(link, ITEMS);
+  if (!key) return [];
+  const row = await db.setting.findUnique({ where: { key } });
+  const read = row ? (JSON.parse(row.value) as ShopItem[] | { failed: true }) : null;
+  const maxAge = read && "failed" in read ? FAILED_CACHE_MS : CACHE_MS;
+  if (row && Date.now() - row.updatedAt.getTime() < maxAge) return Array.isArray(read) ? read : [];
+  // Out of date: look again, showing the old list (or nothing) if the shop is slow.
+  const fresh = lookUpItems(key, link);
+  const timeout = new Promise<null>((done) => setTimeout(() => done(null), 5000));
+  return (await Promise.race([fresh, timeout])) ?? (Array.isArray(read) ? read : []);
+}
+
+/** Looks up best sellers for stores that have none yet, or only a week-old list. Runs after each sheet sync. */
+export async function refreshShopItems() {
+  const [stores, rows] = await Promise.all([
+    db.store.findMany({ select: { website: true, affiliateUrl: true } }),
+    db.setting.findMany({ where: { key: { startsWith: `${ITEMS}:` } } }),
+  ]);
+  const cached = new Map(rows.map((r) => [r.key, r]));
+  const due = stores.flatMap((s) => {
+    const link = s.website || s.affiliateUrl;
+    const key = cacheKey(link, ITEMS);
+    if (!key) return [];
+    const row = cached.get(key);
+    const maxAge = row?.value.includes('"failed"') ? FAILED_CACHE_MS : CACHE_MS;
+    return row && Date.now() - row.updatedAt.getTime() < maxAge ? [] : [{ key, link }];
+  });
+  for (const { key, link } of due.slice(0, PER_SYNC)) await lookUpItems(key, link);
 }
