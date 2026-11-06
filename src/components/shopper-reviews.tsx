@@ -56,7 +56,7 @@ export function ShopperReviews({ stores }: { stores: ReviewedStore[] }) {
         the reviews yourself.
       </p>
 
-      <ul className="mt-4 grid gap-3 sm:mt-6 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
+      <ul className="mt-4 grid grid-cols-1 gap-3 sm:mt-6 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
         {rows.map(({ store, reviews }) => (
           <li key={store.slug} className="card flex flex-col p-4">
             <div className="flex items-center gap-3">
