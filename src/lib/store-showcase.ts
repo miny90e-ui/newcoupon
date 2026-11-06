@@ -119,7 +119,7 @@ export async function brandShowcases(stores: { slug: string; website: string | n
 // The best sellers on a store's page: name, photo and price, from the shop itself, cached for a week.
 
 export type ShopItem = { title: string; image: string; price: string | null };
-const ITEMS = "items:v1";
+const ITEMS = "items:v2";
 
 async function fetchShopItems(link: string): Promise<ShopItem[] | null> {
   const { get, products } = await bestSellers(link);
@@ -129,7 +129,10 @@ async function fetchShopItems(link: string): Promise<ShopItem[] | null> {
     .then((r) => (r.ok ? (r.json() as Promise<{ currency?: string }>) : null))
     .catch(() => null);
   const usd = cart?.currency === "USD";
-  return products.slice(0, 6).map((p) => ({
+  // One card per product: a shop can list the same product once per colour.
+  const titles = new Set<string>();
+  const distinct = products.filter((p) => !titles.has(p.title) && titles.add(p.title));
+  return distinct.slice(0, 6).map((p) => ({
     title: p.title,
     image: sized(p.images[0], 360),
     price: usd ? `${p.price_varies ? "From " : ""}$${(p.price / 100).toFixed(2).replace(/\.00$/, "")}` : null,
