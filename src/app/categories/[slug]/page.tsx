@@ -14,11 +14,17 @@ type Props = { params: Promise<{ slug: string }>; searchParams: Promise<{ c?: st
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const cat = await db.category.findUnique({ where: { slug }, select: { name: true } });
+  const cat = await db.category.findUnique({
+    where: { slug },
+    select: { name: true, stores: { select: { name: true }, orderBy: { featured: "desc" }, take: 3 } },
+  });
   if (!cat) return {};
+  // Naming the stores lets the description match searches for them, not only for the category.
+  const names = cat.stores.map((s) => s.name);
+  const which = names.length ? `${names.join(", ")} and more ${cat.name.toLowerCase()} stores` : `top ${cat.name.toLowerCase()} stores`;
   return {
-    title: `${cat.name} Coupons & Deals — ${monthYear()}`,
-    description: `Save on ${cat.name.toLowerCase()} with the latest coupon codes and deals from top stores.`,
+    title: `${cat.name} Coupons & Promo Codes — ${monthYear()}`,
+    description: `Verified coupon codes, promo codes and deals from ${which}, checked every week.`,
     alternates: { canonical: `/categories/${slug}` },
   };
 }

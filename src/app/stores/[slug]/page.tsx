@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Flame } from "lucide-react";
+import { ArrowRight, BookOpen, ChevronDown, Flame } from "lucide-react";
 import { db } from "@/lib/db";
 import { couponCardInclude, getSavedIds, liveCouponWhere } from "@/lib/queries";
 import { getSession } from "@/lib/session";
 import { shopItems } from "@/lib/store-showcase";
 import { STORE_INTROS } from "@/config/store-intros";
+import { SHOPPER_REVIEWS } from "@/config/shopper-reviews";
+import { savingsSlug, storeFaq, storeMeta } from "@/lib/seo";
 import { monthYear, siteUrl } from "@/lib/utils";
 import { StoreLogo } from "@/components/store-logo";
 import { CouponRow } from "@/components/coupon-row";
@@ -15,16 +17,21 @@ import { StoreTile } from "@/components/store-tile";
 
 type Props = { params: Promise<{ slug: string }>; searchParams: Promise<{ c?: string; type?: string }> };
 
+const offerSelect = { code: true, discountLabel: true, title: true } as const;
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const store = await db.store.findUnique({ where: { slug }, select: { name: true, description: true } });
+  const store = await db.store.findUnique({
+    where: { slug },
+    select: { name: true, coupons: { where: liveCouponWhere(), select: offerSelect } },
+  });
   if (!store) return {};
-  const title = `${store.name} Coupons & Promo Codes — ${monthYear()}`;
+  const { title, description } = storeMeta(store.name, store.coupons, monthYear());
   return {
     title,
-    description: store.description ?? `The latest ${store.name} coupon codes, promo codes and deals, verified by Offers Coupon.`,
+    description,
     alternates: { canonical: `/stores/${slug}` },
-    openGraph: { title },
+    openGraph: { title, description },
   };
 }
 
@@ -37,7 +44,7 @@ export default async function StorePage({ params, searchParams }: Props) {
   const live = liveCouponWhere();
   const typeFilter = type === "code" ? { type: "CODE" as const } : type === "deal" ? { type: "DEAL" as const } : {};
 
-  const [coupons, expired, related, saved, counts, items] = await Promise.all([
+  const [coupons, expired, related, saved, counts, items, offers] = await Promise.all([
     db.coupon.findMany({
       where: { ...live, storeId: store.id, ...typeFilter },
       include: couponCardInclude,
@@ -55,8 +62,11 @@ export default async function StorePage({ params, searchParams }: Props) {
     getSavedIds(session?.userId),
     db.coupon.groupBy({ by: ["type"], where: { ...live, storeId: store.id }, _count: true }),
     shopItems(store),
+    // Every live offer, whatever tab is open: the FAQ answers about the store, not the filtered list.
+    db.coupon.findMany({ where: { ...live, storeId: store.id }, select: offerSelect }),
   ]);
   const intro = STORE_INTROS[store.slug] ?? store.description;
+  const faq = storeFaq({ name: store.name, intro, offers, reviews: SHOPPER_REVIEWS[store.slug] });
 
   const nCodes = counts.find((x) => x.type === "CODE")?._count ?? 0;
   const nDeals = counts.find((x) => x.type === "DEAL")?._count ?? 0;
@@ -68,10 +78,23 @@ export default async function StorePage({ params, searchParams }: Props) {
 
   const jsonLd = {
     "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Stores", item: siteUrl("/stores") },
-      { "@type": "ListItem", position: 2, name: store.name, item: siteUrl(`/stores/${store.slug}`) },
+    "@graph": [
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Home", item: siteUrl("/") },
+          { "@type": "ListItem", position: 2, name: "Stores", item: siteUrl("/stores") },
+          { "@type": "ListItem", position: 3, name: store.name, item: siteUrl(`/stores/${store.slug}`) },
+        ],
+      },
+      ...(faq.length
+        ? [
+            {
+              "@type": "FAQPage",
+              mainEntity: faq.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })),
+            },
+          ]
+        : []),
     ],
   };
 
@@ -154,6 +177,25 @@ export default async function StorePage({ params, searchParams }: Props) {
             )}
           </div>
 
+          {/* Every store with a live offer has a savings article; linking both ways passes visitors and ranking between them. */}
+          {offers.length > 0 && (
+            <Link
+              href={`/savings-tips/${savingsSlug(store.slug)}`}
+              className="group mt-5 flex items-center gap-3 rounded-2xl bg-brand-tint p-3.5 ring-1 ring-brand/15 transition hover:ring-brand/40 sm:p-4"
+            >
+              <span className="grid size-10 shrink-0 place-items-center rounded-full bg-brand text-white">
+                <BookOpen className="size-5" aria-hidden />
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block text-sm font-extrabold text-ink sm:text-base">How to save at {store.name}</span>
+                <span className="block text-xs text-body sm:text-sm">
+                  What the code takes off, how to use it{SHOPPER_REVIEWS[store.slug] ? " and how shoppers rate the store" : ""}.
+                </span>
+              </span>
+              <ArrowRight className="size-5 shrink-0 text-brand transition-transform group-hover:translate-x-0.5" aria-hidden />
+            </Link>
+          )}
+
           {expired.length > 0 && (
             <details className="mt-10">
               <summary className="cursor-pointer text-lg font-bold text-ink">Recently expired {store.name} coupons</summary>
@@ -162,6 +204,25 @@ export default async function StorePage({ params, searchParams }: Props) {
                 {expired.map((cp) => <CouponRow key={cp.id} coupon={cp} saved={saved.has(cp.id)} expired />)}
               </div>
             </details>
+          )}
+
+          {faq.length > 0 && (
+            <section className="mt-10" aria-labelledby="faq-title">
+              <h2 id="faq-title" className="section-title">
+                {store.name} promo code FAQ
+              </h2>
+              <div className="mt-4 divide-y divide-line overflow-hidden rounded-2xl bg-surface ring-1 ring-black/5">
+                {faq.map((f, i) => (
+                  <details key={f.q} open={i === 0} className="group">
+                    <summary className="flex cursor-pointer list-none items-center gap-3 p-4 text-[15px] font-bold text-ink hover:bg-brand-tint [&::-webkit-details-marker]:hidden">
+                      <span className="flex-1">{f.q}</span>
+                      <ChevronDown className="size-4 shrink-0 text-brand transition-transform group-open:rotate-180" aria-hidden />
+                    </summary>
+                    <p className="px-4 pb-4 text-sm leading-relaxed text-body">{f.a}</p>
+                  </details>
+                ))}
+              </div>
+            </section>
           )}
 
           {related.length > 0 && (

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
-import { BadgeCheck, CheckCircle2, Info, ListChecks, ListOrdered, type LucideIcon, Star, Wrench } from "lucide-react";
+import { notFound, permanentRedirect } from "next/navigation";
+import { ArrowRight, BadgeCheck, CheckCircle2, Info, ListChecks, ListOrdered, type LucideIcon, Star, Wrench } from "lucide-react";
 import { savingsPost, type SavingsPost } from "@/lib/savings-posts";
 import { CHECKLIST, TIPS, TROUBLESHOOT } from "@/config/savings-guides";
 import { PostCard, PostImage, PostMeta, Sticker, TONE_CYCLE, postLabel, postTone } from "@/components/savings-post-card";
@@ -9,7 +9,8 @@ import { ReviewSummary } from "@/components/shopper-reviews";
 import { CouponHowTo } from "@/components/coupon-how-to";
 import { CouponReveal } from "@/components/coupon-reveal";
 import { RevealTrigger } from "@/components/reveal-trigger";
-import { cn } from "@/lib/utils";
+import { savingsSlug } from "@/lib/seo";
+import { SITE_NAME, cn, siteUrl } from "@/lib/utils";
 
 type Props = { params: Promise<{ slug: string }>; searchParams: Promise<{ c?: string }> };
 
@@ -152,6 +153,17 @@ function DealArticle({ post }: { post: SavingsPost }) {
           <p className="text-[15px] leading-relaxed text-body">{coupon.description}</p>
         </Panel>
       )}
+
+      <Link
+        href={`/stores/${store.slug}`}
+        className="group mt-6 flex items-center gap-3 rounded-2xl bg-ink p-4 text-white transition hover:bg-ink-soft"
+      >
+        <span className="min-w-0 flex-1">
+          <span className="block font-extrabold">All {store.name} promo codes</span>
+          <span className="block text-sm text-white/75">Every {store.name} coupon and deal we have, on one page.</span>
+        </span>
+        <ArrowRight className="size-5 shrink-0 text-gold transition-transform group-hover:translate-x-0.5" aria-hidden />
+      </Link>
     </>
   );
 }
@@ -227,12 +239,30 @@ function HowToGuide() {
 export default async function SavingsPostPage({ params, searchParams }: Props) {
   const [{ slug }, { c }] = await Promise.all([params, searchParams]);
   const found = await savingsPost(slug);
-  if (!found) notFound();
+  if (!found) {
+    // Articles used to live at /savings-tips/<store>-promo-code.
+    const old = slug.match(/^(.+)-promo-code$/);
+    if (old) permanentRedirect(`/savings-tips/${savingsSlug(old[1])}`);
+    notFound();
+  }
   const { post, related } = found;
   const tone = postTone(post);
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: post.title,
+    description: post.excerpt,
+    datePublished: post.date,
+    dateModified: post.date,
+    image: post.image ? [post.image] : undefined,
+    author: { "@type": "Organization", name: SITE_NAME, url: siteUrl("/about") },
+    publisher: { "@type": "Organization", name: SITE_NAME, url: siteUrl("/") },
+    mainEntityOfPage: siteUrl(`/savings-tips/${post.slug}`),
+  };
 
   return (
     <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <section className={cn("relative overflow-hidden bg-gradient-to-br text-white", tone.hero)}>
         <div aria-hidden className="absolute inset-0 bg-[radial-gradient(rgb(255_255_255/0.09)_1px,transparent_1px)] bg-[size:18px_18px]" />
         <div aria-hidden className="absolute -right-24 -top-24 size-80 rounded-full bg-gold/20 blur-3xl" />

@@ -3,7 +3,7 @@ import { BadgeCheck, Gift, Tag } from "lucide-react";
 import { db } from "@/lib/db";
 import { couponCardInclude, getSavedIds, liveCouponWhere, storeSummaries, topBrands, type StoreSummary } from "@/lib/queries";
 import { getSession } from "@/lib/session";
-import { safeHref } from "@/lib/utils";
+import { SITE_NAME, safeHref, siteUrl } from "@/lib/utils";
 import { HeroCarousel } from "@/components/hero-carousel";
 import { CouponCard } from "@/components/coupon-card";
 import { CouponReveal } from "@/components/coupon-reveal";
@@ -40,8 +40,18 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
   const popular = summaries.filter((s) => s.offers > 0).sort((a, b) => b.offers - a.offers);
   const friday = blackFriday();
 
+  // Tells Google who runs the site and what it is called, for the site name shown in results.
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      { "@type": "WebSite", name: SITE_NAME, url: siteUrl("/") },
+      { "@type": "Organization", name: SITE_NAME, url: siteUrl("/"), logo: siteUrl("/icon.svg") },
+    ],
+  };
+
   return (
     <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       {/* On phones the title comes first, like a plain list page; from sm up the brand banners lead */}
       <div className="flex flex-col">
         {/* Top brands by coupon use; the admin banners / plain hero only show when no brand has a live offer */}

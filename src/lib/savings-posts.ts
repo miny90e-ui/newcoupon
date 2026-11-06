@@ -2,6 +2,7 @@ import "server-only";
 import { db } from "./db";
 import { liveCouponWhere } from "./queries";
 import { brandShowcases } from "./store-showcase";
+import { savingsSlug } from "./seo";
 import { GUIDES } from "@/config/savings-guides";
 import { REVIEWS_CHECKED, SHOPPER_REVIEWS, type ShopperReviews } from "@/config/shopper-reviews";
 
@@ -68,9 +69,10 @@ export async function savingsPosts(): Promise<SavingsPost[]> {
       const show = showcases.get(store.slug);
       const offer = coupon.title.replace(/\s+with code\s+\S+$/i, "");
       return {
-        slug: `${store.slug}-promo-code`,
+        // "How to save at X", not "X promo code": the store page already targets the promo code search (see lib/seo.ts).
+        slug: savingsSlug(store.slug),
         kind: "deal",
-        title: `${store.name} ${coupon.code ? "Promo Code" : "Deal"}: ${titleCase(offer)}`,
+        title: `How to Save at ${store.name}: ${titleCase(offer)}`,
         excerpt: dealExcerpt(reviews, coupon.code),
         date: REVIEWS_CHECKED,
         image: show?.backdrop ?? null,

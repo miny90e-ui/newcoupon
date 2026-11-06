@@ -23,6 +23,8 @@ export const metadata: Metadata = {
     "Save on fashion, tech, travel, beauty and more with verified coupon codes and deals from the stores you love.",
   openGraph: { siteName: SITE_NAME, type: "website" },
   icons: { icon: "/icon.svg" },
+  // Google Search Console's "HTML tag" check: paste the code it gives into GOOGLE_SITE_VERIFICATION on the host.
+  verification: process.env.GOOGLE_SITE_VERIFICATION ? { google: process.env.GOOGLE_SITE_VERIFICATION } : undefined,
 };
 
 export const viewport: Viewport = {
