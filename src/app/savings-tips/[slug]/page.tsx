@@ -56,12 +56,14 @@ function Panel({
 function DealTicket({ post }: { post: SavingsPost }) {
   const { store, coupon } = post;
   if (!store || !coupon) return null;
-  const amount = coupon.discountLabel?.replace(/\s*off$/i, "");
+  // "10% OFF" shows as a big "10%" over "off"; a label like "FREE SHIP" shows as it is.
+  const off = /\s+off$/i.test(coupon.discountLabel ?? "");
+  const amount = coupon.discountLabel?.replace(/\s+off$/i, "");
   return (
     <div className="mt-5 flex overflow-hidden rounded-2xl bg-white text-ink shadow-[0_18px_40px_-16px_rgb(0_0_0/0.6)]">
       <div className="flex w-24 shrink-0 flex-col items-center justify-center bg-gold px-2 py-3 text-center sm:w-28">
         <span className="text-[26px] font-extrabold leading-none tracking-tight sm:text-3xl">{amount ?? "Deal"}</span>
-        {amount && <span className="mt-1 text-[11px] font-extrabold uppercase tracking-[0.2em]">off</span>}
+        {off && <span className="mt-1 text-[11px] font-extrabold uppercase tracking-[0.2em]">off</span>}
       </div>
       <div className="flex min-w-0 flex-1 flex-col gap-2.5 border-l-2 border-dashed border-line p-3 sm:flex-row sm:items-center sm:p-4">
         <div className="min-w-0 flex-1">
