@@ -17,7 +17,7 @@ export type SavingsPost = {
   /** Wide photo for the featured slot and the article header */
   image: string | null;
   thumb: string | null;
-  store?: { slug: string; name: string; logoUrl: string | null };
+  store?: { slug: string; name: string; logoUrl: string | null; category: { slug: string; name: string } | null };
   coupon?: { id: string; title: string; code: string | null; discountLabel: string | null; description: string | null };
   /** The offer in words, without the "with code X" the importer adds when the sheet's offer column is blank */
   offer?: string;
@@ -45,6 +45,7 @@ export async function savingsPosts(): Promise<SavingsPost[]> {
       slug: true,
       name: true,
       logoUrl: true,
+      category: { select: { slug: true, name: true } },
       website: true,
       affiliateUrl: true,
       coupons: {

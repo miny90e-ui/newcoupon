@@ -15,10 +15,10 @@ function Source({ s }: { s: ReviewSource }) {
       href={s.url}
       target="_blank"
       rel="nofollow noopener noreferrer"
-      className="group/src flex items-center gap-2 rounded-xl bg-canvas px-3 py-2 text-sm hover:bg-brand-tint"
+      className="group/src flex items-center gap-2 rounded-xl bg-white px-3 py-2.5 text-sm shadow-sm ring-1 ring-black/5 transition hover:ring-[#e0a800]"
     >
-      <Star className="size-4 shrink-0 fill-gold text-[#e0a800]" aria-hidden />
-      <span className="font-extrabold text-ink">
+      <Star className="size-5 shrink-0 fill-gold text-[#e0a800]" aria-hidden />
+      <span className="text-base font-extrabold text-ink">
         {ratingText(s.rating)}
         <span className="font-medium text-muted">/5</span>
       </span>
@@ -41,22 +41,26 @@ export function ReviewSummary({ reviews }: { reviews: ShopperReviews }) {
         ))}
       </div>
       {(reviews.liked || reviews.disliked) && (
-        <div className="mt-3 space-y-1.5 text-sm leading-relaxed text-body">
+        <div className="mt-3 grid gap-2 text-sm leading-relaxed text-body sm:grid-flow-col sm:auto-cols-fr">
           {reviews.liked && (
-            <p className="flex gap-2">
-              <ThumbsUp className="mt-1 size-3.5 shrink-0 text-brand" aria-label="Liked" />
+            <p className="flex gap-2.5 rounded-xl bg-[#e3f6ea] p-3">
+              <span className="grid size-7 shrink-0 place-items-center rounded-full bg-[#15803d] text-white">
+                <ThumbsUp className="size-3.5" aria-label="Liked" />
+              </span>
               {reviews.liked}
             </p>
           )}
           {reviews.disliked && (
-            <p className="flex gap-2">
-              <ThumbsDown className="mt-1 size-3.5 shrink-0 text-danger" aria-label="Disliked" />
+            <p className="flex gap-2.5 rounded-xl bg-[#fde8e8] p-3">
+              <span className="grid size-7 shrink-0 place-items-center rounded-full bg-danger text-white">
+                <ThumbsDown className="size-3.5" aria-label="Disliked" />
+              </span>
               {reviews.disliked}
             </p>
           )}
         </div>
       )}
-      <p className="mt-3 text-xs leading-relaxed text-muted">
+      <p className="mt-3 text-xs leading-relaxed text-[#6b5a2a]">
         Checked {reviewsChecked()}. We list every review site with 10 or more reviews of the store, whatever the score,
         and sum up what reviewers say in our own words. These are reviews of the store, not of Offers Coupon.
       </p>
