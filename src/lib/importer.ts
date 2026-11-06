@@ -236,14 +236,15 @@ async function applyFlat(rows: Row[]) {
     if (!r.code && !r.title && !r.discount) continue; // store-only row
     const code = r.code?.toUpperCase();
     // "10%" → "10% off", "$5" → "$5 off"; labels like "10% OFF" or "FREE SHIP" are kept as they are.
-    const d = r.discount;
+    // A cell typed as "10%" in Google Sheets comes out of the .xlsx export as the number 0.1.
+    const d = /^0?\.\d+$/.test(r.discount ?? "") ? `${Math.round(Number(r.discount) * 1000) / 10}%` : r.discount;
     const label = !d ? "Save" : /^[\d$€£]/.test(d) && !/off/i.test(d) ? `${d} off` : d;
     const title = r.title || (code ? `${label} with code ${code}` : `${label} at ${name}`);
     couponRows.push({
       store: name,
       title,
       code: code ?? "",
-      discount: r.discount ?? "",
+      discount: d ?? "",
       tag: r.tag ?? "",
       expires_at: r.expires_at ?? "",
       affiliate_url: r.affiliate_url && r.affiliate_url !== store.link ? r.affiliate_url : "",
