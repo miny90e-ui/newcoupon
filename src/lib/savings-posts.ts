@@ -70,7 +70,7 @@ export async function savingsPosts(): Promise<SavingsPost[]> {
       return {
         slug: `${store.slug}-promo-code`,
         kind: "deal",
-        title: `${store.name} Promo Code: ${titleCase(offer)}`,
+        title: `${store.name} ${coupon.code ? "Promo Code" : "Deal"}: ${titleCase(offer)}`,
         excerpt: dealExcerpt(reviews, coupon.code),
         date: REVIEWS_CHECKED,
         image: show?.backdrop ?? null,

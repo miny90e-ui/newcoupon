@@ -127,7 +127,7 @@ function DealArticle({ post }: { post: SavingsPost }) {
         )}
       </Panel>
 
-      <Panel icon={ListOrdered} title={`How to use your ${store.name} code`} className={tone.tint} iconClass={tone.solid}>
+      <Panel icon={ListOrdered} title={coupon.code ? `How to use your ${store.name} code` : `How to get this ${store.name} deal`} className={tone.tint} iconClass={tone.solid}>
         <ol className={cn("grid gap-2", steps.length > 1 && "sm:grid-cols-3")}>
           {steps.map((step, i) => (
             <li
@@ -252,7 +252,7 @@ export default async function SavingsPostPage({ params, searchParams }: Props) {
               <div>
                 <p className="inline-flex items-center rounded-full bg-white/15 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-white ring-1 ring-white/20">
                   {postLabel(post)}
-                  {post.kind === "deal" && <span className="text-gold">&nbsp;· Verified code</span>}
+                  {post.kind === "deal" && <span className="text-gold">&nbsp;· Verified {post.coupon?.code ? "code" : "deal"}</span>}
                 </p>
                 <h1 className="mt-2 text-[22px] font-extrabold leading-tight tracking-tight text-white sm:text-[32px]">{post.title}</h1>
                 <PostMeta post={post} onDark className="mt-2" />

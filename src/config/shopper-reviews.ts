@@ -83,6 +83,12 @@ export const SHOPPER_REVIEWS: Record<string, ShopperReviews> = {
     liked: "Easy, wearable wigs and friendly help over the phone.",
     disliked: "Some dislike the return policy, and one topper didn't match its photos.",
   },
+  trivita: {
+    sources: [
+      { site: "trivita.com", product: "Nopalea", rating: 4.7, count: 167, url: "https://www.trivita.com/products/nopalea" },
+      { site: "trivita.com", product: "Slow Dissolve Super B-12", rating: 4.8, count: 66, url: "https://www.trivita.com/products/slow-dissolve-super-b-12" },
+    ],
+  },
 };
 
 /** Stores we have codes for but found no review source with 10+ reviews. */

@@ -27,6 +27,8 @@ export const STORE_INTROS: Record<string, string> = {
     "SodaPup makes enrichment products for dogs: lick mats, slow-feeder bowls and trays, and tough nylon chew toys, many of them made in the USA.",
   "supreme-hair-and-beauty":
     "Supreme Hair & Beauty sells wigs, hair care and beauty supplies, from Carotone brightening cream to hair growth oil and semi-permanent hair color.",
+  trivita:
+    "TriVita sells vitamins and daily supplements, such as Nopalea cactus juice, slow-dissolve B-12, MyoHealth for muscles, beetroot gummies and multi collagen.",
   watchdives:
     "Watchdives makes dive and dress watches, including titanium automatic divers and quartz chronographs, plus rubber watch straps you cut to size.",
 };
