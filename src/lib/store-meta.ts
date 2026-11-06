@@ -9,6 +9,16 @@ export type StoreMeta = { name: string | null; logo: string | null; description:
 const TRACKERS =
   /(^|\.)(pxf\.io|sjv\.io|awin1\.com|anrdoezrs\.net|dpbolvw\.net|kqzyfj\.com|jdoqocy\.com|tkqlhce\.com|shareasale\.com|linksynergy\.com|skimresources\.com|amzn\.to|bit\.ly|tinyurl\.com|uppromote\.com|prf\.hn|impact\.com|go2cloud\.org|clickbank\.net|accesstrade\.vn|shope\.ee|s\.lazada\.vn)$/i;
 
+/** The shop's own host ("example.com"), or null for a tracking link or a bad link. */
+export function shopHost(link: string | null | undefined) {
+  try {
+    const host = new URL(link ?? "").hostname.replace(/^www\./, "");
+    return TRACKERS.test(host) ? null : host;
+  } catch {
+    return null;
+  }
+}
+
 const CACHE_MS = 30 * 86_400_000;
 const FAILED_CACHE_MS = 86_400_000;
 

@@ -3,7 +3,7 @@ import type { Prisma } from "@prisma/client";
 import { z } from "zod";
 import { db } from "./db";
 import { slugify } from "./utils";
-import { guessCategorySlug, storeMeta } from "./store-meta";
+import { guessCategorySlug, shopHost, storeMeta } from "./store-meta";
 
 // Shared by the admin upload (CSV / Excel), the Google Sheet sync and the deploy seed (prisma/seed.ts),
 // so it must not import "server-only".
@@ -39,9 +39,9 @@ function sheetRows(data: unknown[][] | undefined): Row[] {
 
 const yes = (v?: string) => ["1", "true", "yes", "y", "x", "có", "co"].includes((v ?? "").toLowerCase());
 
-/** Accepts 2026-12-31, 31/12/2026 or 31-12-2026. */
+/** Accepts 2026-12-31, 31/12/2026 or 31-12-2026; "Không thời hạn" / "No expiry" / "-" mean no end date. */
 function parseDate(v: string): Date | null | "invalid" {
-  if (!v) return null;
+  if (!v || /^(-+|—|không.*|khong.*|vô thời hạn|vo thoi han|no expir.*|never|ongoing|none)$/i.test(v.trim())) return null;
   const dmy = v.match(/^(\d{1,2})[/.-](\d{1,2})[/.-](\d{4})$/);
   const d = dmy ? new Date(Date.UTC(+dmy[3], +dmy[2] - 1, +dmy[1], 23, 59, 59)) : new Date(/^\d{4}-\d{2}-\d{2}$/.test(v) ? `${v}T23:59:59Z` : v);
   return Number.isNaN(d.getTime()) ? "invalid" : d;
@@ -191,10 +191,17 @@ async function applyFlat(rows: Row[]) {
         ? categories.find((c) => c.slug === slugify(r.category) || c.name.toLowerCase() === r.category.toLowerCase())
         : undefined;
       if (r.category && !cat) errors.push(`Dòng ${line}: không có ngành hàng "${r.category}"`);
-      const existing = await db.store.findUnique({
-        where: { slug },
-        select: { id: true, logoUrl: true, categoryId: true, description: true, website: true },
-      });
+      const select = { id: true, logoUrl: true, categoryId: true, description: true, website: true } as const;
+      // A store renamed in the sheet keeps its page, coupons and click counts: same shop link, same store.
+      const host = shopHost(r.website || r.affiliate_url);
+      const taken = new Set([...stores.values()].map((s) => s.id));
+      const existing =
+        (await db.store.findUnique({ where: { slug }, select })) ??
+        (host
+          ? (await db.store.findMany({ select: { ...select, affiliateUrl: true } })).find(
+              (s) => !taken.has(s.id) && shopHost(s.website || s.affiliateUrl) === host
+            )
+          : undefined);
       // Only overwrite what the sheet actually fills in, so details set in the admin panel survive.
       const data: Prisma.StoreUncheckedUpdateInput & { name: string; affiliateUrl: string } = {
         name,
@@ -220,7 +227,7 @@ async function applyFlat(rows: Row[]) {
         }
       }
       const store = existing
-        ? await db.store.update({ where: { slug }, data })
+        ? await db.store.update({ where: { id: existing.id }, data })
         : await db.store.create({ data: { ...data, slug, featured: true } as Prisma.StoreUncheckedCreateInput });
       if (existing) storesUpdated++; else storesAdded++;
       stores.set(key, { id: store.id, link: r.affiliate_url });
