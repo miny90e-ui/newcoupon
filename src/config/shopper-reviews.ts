@@ -86,4 +86,4 @@ export const SHOPPER_REVIEWS: Record<string, ShopperReviews> = {
 };
 
 /** Stores we have codes for but found no review source with 10+ reviews. */
-export const NOT_ENOUGH_REVIEWS = ["maestri-house", "ododos", "imagix"];
+export const NOT_ENOUGH_REVIEWS = ["maestri-house", "ododos", "imagix", "americas-favorite-toffee"];
