@@ -43,16 +43,16 @@ export function ReviewSummary({ reviews }: { reviews: ShopperReviews }) {
       {(reviews.liked || reviews.disliked) && (
         <div className="mt-3 grid gap-2 text-sm leading-relaxed text-body sm:grid-flow-col sm:auto-cols-fr">
           {reviews.liked && (
-            <p className="flex gap-2.5 rounded-xl bg-[#e3f6ea] p-3">
-              <span className="grid size-7 shrink-0 place-items-center rounded-full bg-[#15803d] text-white">
+            <p className="flex gap-2.5 rounded-xl bg-brand-tint p-3">
+              <span className="grid size-7 shrink-0 place-items-center rounded-full bg-brand text-white">
                 <ThumbsUp className="size-3.5" aria-label="Liked" />
               </span>
               {reviews.liked}
             </p>
           )}
           {reviews.disliked && (
-            <p className="flex gap-2.5 rounded-xl bg-[#fde8e8] p-3">
-              <span className="grid size-7 shrink-0 place-items-center rounded-full bg-danger text-white">
+            <p className="flex gap-2.5 rounded-xl bg-[#e6ecee] p-3">
+              <span className="grid size-7 shrink-0 place-items-center rounded-full bg-ink text-white">
                 <ThumbsDown className="size-3.5" aria-label="Disliked" />
               </span>
               {reviews.disliked}

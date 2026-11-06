@@ -42,7 +42,7 @@ function Panel({
   return (
     <section className={cn("mt-5 rounded-2xl p-4 ring-1 ring-black/5 sm:mt-6 sm:p-6", className)}>
       <h2 className="flex items-center gap-2.5 text-lg font-extrabold tracking-tight sm:text-xl">
-        <span className={cn("grid size-8 shrink-0 place-items-center rounded-full text-white", iconClass)}>
+        <span className={cn("grid size-8 shrink-0 place-items-center rounded-full", iconClass)}>
           <Icon className="size-4" aria-hidden />
         </span>
         {title}
@@ -65,7 +65,7 @@ function DealTicket({ post }: { post: SavingsPost }) {
       </div>
       <div className="flex min-w-0 flex-1 flex-col gap-2.5 border-l-2 border-dashed border-line p-3 sm:flex-row sm:items-center sm:p-4">
         <div className="min-w-0 flex-1">
-          <p className="flex items-center gap-1 text-xs font-bold text-[#15803d]">
+          <p className="flex items-center gap-1 text-xs font-bold text-brand">
             <BadgeCheck className="size-3.5" aria-hidden />
             {coupon.code ? "Code tested this week" : "Deal checked this week"}
           </p>
@@ -74,7 +74,7 @@ function DealTicket({ post }: { post: SavingsPost }) {
         <RevealTrigger
           couponId={coupon.id}
           label={`${coupon.code ? "Get code" : "Get deal"}: ${store.name} — ${coupon.title}`}
-          className={cn("btn min-h-10 shrink-0 px-6 font-bold text-white hover:brightness-110", postTone(post).solid)}
+          className={cn("btn min-h-10 shrink-0 px-6 font-bold hover:brightness-110", postTone(post).solid)}
         >
           {coupon.code ? "Get Code" : "Get Deal"}
         </RevealTrigger>
@@ -116,7 +116,7 @@ function DealArticle({ post }: { post: SavingsPost }) {
         )}
       </p>
 
-      <Panel icon={Star} title={`What shoppers say about ${store.name}`} className="bg-[#fff8e1]" iconClass="bg-[#e0a800]">
+      <Panel icon={Star} title={`What shoppers say about ${store.name}`} className="bg-[#fff7d6]" iconClass="bg-gold text-ink">
         {reviews ? (
           <ReviewSummary reviews={reviews} />
         ) : (
@@ -135,7 +135,7 @@ function DealArticle({ post }: { post: SavingsPost }) {
               className="flex items-start gap-3 rounded-xl bg-white/80 p-3 text-sm leading-relaxed text-body sm:flex-col sm:gap-2"
             >
               <span
-                className={cn("grid size-7 shrink-0 place-items-center rounded-full text-[13px] font-extrabold text-white", tone.solid)}
+                className={cn("grid size-7 shrink-0 place-items-center rounded-full text-[13px] font-extrabold", tone.solid)}
               >
                 {i + 1}
               </span>
@@ -146,7 +146,7 @@ function DealArticle({ post }: { post: SavingsPost }) {
       </Panel>
 
       {coupon.description && (
-        <Panel icon={Info} title="Good to know" className="bg-[#e6f6fd]" iconClass="bg-[#0369a1]">
+        <Panel icon={Info} title="Good to know" className="bg-[#e6ecee]" iconClass="bg-ink text-white">
           <p className="text-[15px] leading-relaxed text-body">{coupon.description}</p>
         </Panel>
       )}
@@ -170,7 +170,7 @@ function PayLessGuide() {
                 <img src={t.photo} alt="" loading="lazy" className="size-16 rounded-xl object-cover sm:size-20" />
                 <span
                   className={cn(
-                    "absolute -left-1.5 -top-1.5 grid size-7 place-items-center rounded-full text-[13px] font-extrabold text-white ring-2 ring-white",
+                    "absolute -left-1.5 -top-1.5 grid size-7 place-items-center rounded-full text-[13px] font-extrabold ring-2 ring-white",
                     tone.solid,
                   )}
                 >
@@ -185,11 +185,11 @@ function PayLessGuide() {
           );
         })}
       </ol>
-      <Panel icon={ListChecks} title="Before you pay: a 30-second checklist" className="bg-[#eaf8ef]" iconClass="bg-[#15803d]">
+      <Panel icon={ListChecks} title="Before you pay: a 30-second checklist" className="bg-brand-tint" iconClass="bg-brand text-white">
         <ul className="space-y-2">
           {CHECKLIST.map((item) => (
             <li key={item} className="flex items-start gap-2.5 text-[15px] text-body">
-              <CheckCircle2 className="mt-0.5 size-4.5 shrink-0 text-[#15803d]" aria-hidden />
+              <CheckCircle2 className="mt-0.5 size-4.5 shrink-0 text-brand" aria-hidden />
               {item}
             </li>
           ))}
@@ -208,11 +208,11 @@ function HowToGuide() {
       <div className="mt-5 overflow-hidden rounded-[20px] bg-gradient-to-br from-brand to-ink px-4 py-6 sm:px-8 sm:py-8">
         <CouponHowTo photo="/tips/cart.webp" kicker="3 steps" />
       </div>
-      <Panel icon={Wrench} title="Code won't apply?" className="bg-[#fff2e8]" iconClass="bg-[#c2410c]">
+      <Panel icon={Wrench} title="Code won't apply?" className="bg-[#fff7d6]" iconClass="bg-gold text-ink">
         <ul className="grid gap-2 sm:grid-cols-2">
           {TROUBLESHOOT.map((t) => (
             <li key={t.title} className="rounded-xl bg-white/80 p-3">
-              <h3 className="text-[15px] font-bold text-[#9a3412]">{t.title}</h3>
+              <h3 className="text-[15px] font-bold text-[#8a5300]">{t.title}</h3>
               <p className="mt-0.5 text-sm leading-relaxed text-body">{t.body}</p>
             </li>
           ))}

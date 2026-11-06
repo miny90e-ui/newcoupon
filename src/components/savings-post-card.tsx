@@ -8,26 +8,19 @@ import { ratingText } from "./shopper-reviews";
 export const postDate = (d: string) =>
   new Date(`${d}T12:00:00Z`).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
 
-// One colour family per category, so the list reads at a glance. `hero` carries white text (4.5:1 at its
-// lighter end), `text` sits on `tint`, `stage` is the bright backdrop behind a product photo.
+// The site's three colours only: teal for deals, gold for guides, dark teal as the third shade in lists.
+// `hero` carries white text, `text` sits on `tint`, `stage` is the backdrop behind a product photo,
+// `solid` is a filled badge or button with its own text colour.
 type Tone = { hero: string; stage: string; tint: string; text: string; solid: string };
-const TONES: Record<string, Tone> = {
-  beauty: { hero: "from-[#be185d] to-[#5c0d33]", stage: "from-[#ffd1e3] to-[#f472a8]", tint: "bg-[#fdeef4]", text: "text-[#a8174f]", solid: "bg-[#be185d]" },
-  fashion: { hero: "from-[#6d28d9] to-[#2e1065]", stage: "from-[#e2d6ff] to-[#a78bfa]", tint: "bg-[#f3eeff]", text: "text-[#5b21b6]", solid: "bg-[#6d28d9]" },
-  electronics: { hero: "from-[#1d4ed8] to-[#172554]", stage: "from-[#d3e2ff] to-[#6d9cff]", tint: "bg-[#eaf1ff]", text: "text-[#1e40af]", solid: "bg-[#1d4ed8]" },
-  travel: { hero: "from-[#0369a1] to-[#0c2d48]", stage: "from-[#cdeefd] to-[#4cc3f5]", tint: "bg-[#e6f6fd]", text: "text-[#075985]", solid: "bg-[#0369a1]" },
-  "home-garden": { hero: "from-[#15803d] to-[#052e16]", stage: "from-[#d3f5de] to-[#5fd38b]", tint: "bg-[#eaf8ef]", text: "text-[#166534]", solid: "bg-[#15803d]" },
-  "food-dining": { hero: "from-[#c2410c] to-[#6c2408]", stage: "from-[#ffe1c7] to-[#fb923c]", tint: "bg-[#fff2e8]", text: "text-[#9a3412]", solid: "bg-[#c2410c]" },
-  "sports-outdoors": { hero: "from-[#b91c1c] to-[#5c0f0f]", stage: "from-[#ffd6d6] to-[#f87171]", tint: "bg-[#fdeeee]", text: "text-[#991b1b]", solid: "bg-[#b91c1c]" },
-  "health-wellness": { hero: "from-[#0c7a80] to-[#0f2e33]", stage: "from-[#cdf1f1] to-[#4cc9c9]", tint: "bg-[#e8f6f6]", text: "text-[#0b6a6f]", solid: "bg-[#0c7a80]" },
-};
-/** The category colours in turn, for lists that aren't about one store (the tips in a guide). */
-export const TONE_CYCLE = Object.values(TONES);
-const GUIDE: Tone = { hero: "from-[#0c7a80] to-[#0f2e33]", stage: "from-[#fff1b8] to-[#ffc93c]", tint: "bg-[#fff7d6]", text: "text-[#8a5300]", solid: "bg-[#e0a800]" };
+const TEAL: Tone = { hero: "from-brand to-ink", stage: "from-[#c6ecee] to-[#4fb8be]", tint: "bg-brand-tint", text: "text-brand", solid: "bg-brand text-white" };
+const GOLD: Tone = { hero: "from-brand to-ink", stage: "from-[#fff1b8] to-[#ffc93c]", tint: "bg-[#fff7d6]", text: "text-[#8a5300]", solid: "bg-gold text-ink" };
+const INK: Tone = { hero: "from-ink-soft to-ink", stage: "from-[#c9d6d8] to-[#7d9a9e]", tint: "bg-[#e6ecee]", text: "text-ink", solid: "bg-ink text-white" };
+
+/** The three shades in turn, for lists that aren't about one store (the tips in a guide). */
+export const TONE_CYCLE = [TEAL, GOLD, INK];
 
 export function postTone(post: SavingsPost): Tone {
-  if (post.kind === "guide") return GUIDE;
-  return TONES[post.store?.category?.slug ?? ""] ?? TONES["health-wellness"];
+  return post.kind === "guide" ? GOLD : TEAL;
 }
 
 /** "Fashion", "Guide": what a post is about, in one word or two. */
