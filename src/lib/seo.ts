@@ -38,8 +38,10 @@ export function storeMeta(name: string, offers: Offer[], month: string) {
     ? `${name} ${hasCode ? "Promo Code" : "Coupons"}: ${words} — ${month}`
     : `${name} Coupons & Promo Codes — ${month}`;
   const count = `${n} verified ${name} ${n === 1 ? "offer" : "offers"}`;
+  // "Save $10 at X", "Get free shipping at X"
+  const lead = !words ? "Save" : /\s+off$/i.test(words) ? `Save ${words.replace(/\s+off$/i, "")}` : `Get ${words.toLowerCase()}`;
   const description = hasCode
-    ? `Save ${words ?? "money"} at ${name} with a promo code we tested in the store's own cart. ${count}: coupon codes, discount codes and deals, checked every week.`
+    ? `${lead} at ${name} with a promo code we tested in the store's own cart. ${count}: coupon codes, discount codes and deals, checked every week.`
     : words
       ? `${words} at ${name}, no promo code needed. ${count}, with every ${name} coupon and deal in one place.`
       : `The latest ${name} coupon codes, promo codes and deals, verified by Offers Coupon.`;

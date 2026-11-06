@@ -16,12 +16,17 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const cat = await db.category.findUnique({
     where: { slug },
-    select: { name: true, stores: { select: { name: true }, orderBy: { featured: "desc" }, take: 3 } },
+    select: { name: true, stores: { select: { name: true }, orderBy: { featured: "desc" }, take: 4 } },
   });
   if (!cat) return {};
   // Naming the stores lets the description match searches for them, not only for the category.
   const names = cat.stores.map((s) => s.name);
-  const which = names.length ? `${names.join(", ")} and more ${cat.name.toLowerCase()} stores` : `top ${cat.name.toLowerCase()} stores`;
+  const which =
+    names.length > 3
+      ? `${names.slice(0, 3).join(", ")} and more ${cat.name.toLowerCase()} stores`
+      : names.length
+        ? names.join(", ").replace(/, ([^,]*)$/, " and $1")
+        : `top ${cat.name.toLowerCase()} stores`;
   return {
     title: `${cat.name} Coupons & Promo Codes — ${monthYear()}`,
     description: `Verified coupon codes, promo codes and deals from ${which}, checked every week.`,
