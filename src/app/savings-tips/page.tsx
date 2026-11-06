@@ -1,6 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { db } from "@/lib/db";
+import { liveCouponWhere } from "@/lib/queries";
+import { NOT_ENOUGH_REVIEWS, SHOPPER_REVIEWS } from "@/config/shopper-reviews";
 import { CouponHowTo } from "@/components/coupon-how-to";
+import { ShopperReviews } from "@/components/shopper-reviews";
 import {
   BellRing, CalendarClock, CheckCircle2, Layers, Mail, PiggyBank, ShoppingCart, Truck, type LucideIcon,
 } from "lucide-react";
@@ -71,7 +75,16 @@ const CHECKLIST = [
   "Confirmed the code hasn't expired",
 ];
 
-export default function SavingsTipsPage() {
+export default async function SavingsTipsPage() {
+  const stores = await db.store.findMany({
+    where: { slug: { in: [...Object.keys(SHOPPER_REVIEWS), ...NOT_ENOUGH_REVIEWS] } },
+    select: {
+      slug: true,
+      name: true,
+      logoUrl: true,
+      coupons: { where: liveCouponWhere(), select: { id: true, discountLabel: true, code: true }, orderBy: { updatedAt: "desc" }, take: 1 },
+    },
+  });
   return (
     <div className="container-page py-10">
       <section className="overflow-hidden rounded-[24px] bg-brand px-5 py-8 text-white sm:px-10 sm:py-10">
@@ -86,6 +99,8 @@ export default function SavingsTipsPage() {
           <CouponHowTo photo="/tips/cart.webp" />
         </div>
       </section>
+
+      <ShopperReviews stores={stores.map(({ coupons, ...s }) => ({ ...s, coupon: coupons[0] ?? null }))} />
 
       <section aria-labelledby="tips-title" className="mt-12">
         <h2 id="tips-title" className="section-title">8 ways to pay less</h2>
