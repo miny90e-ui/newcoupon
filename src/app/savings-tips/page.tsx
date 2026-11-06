@@ -1,164 +1,46 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { db } from "@/lib/db";
-import { liveCouponWhere } from "@/lib/queries";
-import { NOT_ENOUGH_REVIEWS, SHOPPER_REVIEWS } from "@/config/shopper-reviews";
-import { CouponHowTo } from "@/components/coupon-how-to";
-import { ShopperReviews } from "@/components/shopper-reviews";
-import {
-  BellRing, CalendarClock, CheckCircle2, Layers, Mail, PiggyBank, ShoppingCart, Truck, type LucideIcon,
-} from "lucide-react";
+import { savingsPosts } from "@/lib/savings-posts";
+import { FeaturedPost, PostRow } from "@/components/savings-post-card";
 
 export const metadata: Metadata = {
-  title: "Savings Tips — Smarter Ways to Shop Online",
-  description: "Simple, practical habits that help you pay less every time you shop online: stacking codes, timing sales, free shipping and more.",
+  title: "Savings Tips & Shopping Advice",
+  description: "Tested promo codes, real shopper ratings and simple habits that cut the price of what you buy online.",
   alternates: { canonical: "/savings-tips" },
 };
 
-// Photos: free-licence Unsplash images in /public/tips.
-const TIPS: { icon: LucideIcon; photo: string; title: string; body: string }[] = [
-  {
-    icon: Layers,
-    photo: "/tips/stack.webp",
-    title: "Stack a code on top of a sale",
-    body: "Many stores let a promo code apply to items that are already marked down. Add sale items to your cart first, then try the code — the two discounts often combine.",
-  },
-  {
-    icon: Mail,
-    photo: "/tips/email.webp",
-    title: "Claim the first-order discount",
-    body: "Newsletter and SMS sign-ups usually unlock 10–20% off your first purchase. Use a dedicated shopping email so the offers don't crowd your main inbox.",
-  },
-  {
-    icon: Truck,
-    photo: "/tips/shipping.webp",
-    title: "Mind the free-shipping threshold",
-    body: "If you're a few dollars short of free shipping, add something you'd buy anyway instead of paying for delivery. It's often cheaper than the shipping fee.",
-  },
-  {
-    icon: ShoppingCart,
-    photo: "/tips/cart.webp",
-    title: "Leave items in your cart",
-    body: "Signed in and left a cart behind? Some stores follow up with a reminder and an extra discount within a day or two. Patience can pay.",
-  },
-  {
-    icon: CalendarClock,
-    photo: "/tips/calendar.webp",
-    title: "Shop the calendar",
-    body: "Big savings cluster around Black Friday, Cyber Monday, end-of-season clearances and back-to-school. Plan bigger purchases around those windows.",
-  },
-  {
-    icon: BellRing,
-    photo: "/tips/save.webp",
-    title: "Save the coupons you'll need",
-    body: "Tap the heart on any Offers Coupon offer to keep it in your account, so the code is ready when you're ready to buy — before it expires.",
-  },
-  {
-    icon: PiggyBank,
-    photo: "/tips/compare.webp",
-    title: "Compare the final price, not the discount",
-    body: "A bigger percentage off isn't always the better deal. Check the total after shipping and taxes across two or three stores before you pay.",
-  },
-  {
-    icon: CheckCircle2,
-    photo: "/tips/fine-print.webp",
-    title: "Read the fine print",
-    body: "Codes can exclude certain brands, gift cards or sale items, and many have a minimum spend. A quick look at the terms saves a failed checkout.",
-  },
-];
-
-const CHECKLIST = [
-  "Searched Offers Coupon for the store's latest codes",
-  "Checked if the code works on sale items",
-  "Reached the free-shipping minimum (or know the fee)",
-  "Compared the final total with another store",
-  "Confirmed the code hasn't expired",
-];
-
 export default async function SavingsTipsPage() {
-  const stores = await db.store.findMany({
-    where: { slug: { in: [...Object.keys(SHOPPER_REVIEWS), ...NOT_ENOUGH_REVIEWS] } },
-    select: {
-      slug: true,
-      name: true,
-      logoUrl: true,
-      coupons: { where: liveCouponWhere(), select: { id: true, discountLabel: true, code: true }, orderBy: { updatedAt: "desc" }, take: 1 },
-    },
-  });
+  const posts = await savingsPosts();
+  // The top slot needs a photo; the first post that has one leads.
+  const featured = posts.find((p) => p.image) ?? posts[0];
+  const rest = posts.filter((p) => p !== featured);
   return (
-    <div className="container-page py-10">
-      <section className="overflow-hidden rounded-[24px] bg-brand px-5 py-8 text-white sm:px-10 sm:py-10">
-        <p className="text-xs font-semibold uppercase tracking-wider text-white/80 sm:text-sm">Savings Tips</p>
-        <h1 className="mt-1.5 max-w-2xl text-2xl font-extrabold leading-tight tracking-tight text-white sm:text-3xl lg:text-4xl">
-          Small habits that save you money every time you shop
-        </h1>
-        <p className="mt-2 max-w-xl text-sm text-white/85 sm:text-base">
-          Practical tricks our team uses to pay less online — no extreme couponing required.
+    <div className="container-page py-6 sm:py-10">
+      <div className="mx-auto max-w-3xl">
+        <nav aria-label="Breadcrumb" className="text-xs text-muted">
+          <Link href="/" className="hover:text-ink hover:underline">Home</Link>
+          <span aria-hidden> › </span>
+          <span className="text-ink">Savings Tips</span>
+        </nav>
+        <h1 className="mt-2 text-xl font-extrabold tracking-tight sm:text-2xl">Savings Tips & Shopping Advice</h1>
+        <p className="mt-1 text-sm text-muted">
+          Tested promo codes, real shopper ratings and simple habits that cut the price of what you buy.
         </p>
-        <div className="mt-8">
-          <CouponHowTo photo="/tips/cart.webp" />
-        </div>
-      </section>
 
-      <ShopperReviews stores={stores.map(({ coupons, ...s }) => ({ ...s, coupon: coupons[0] ?? null }))} />
+        {featured && (
+          <div className="mt-5">
+            <FeaturedPost post={featured} />
+          </div>
+        )}
 
-      <section aria-labelledby="tips-title" className="mt-12">
-        <h2 id="tips-title" className="section-title">8 ways to pay less</h2>
-        <ol className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {TIPS.map(({ icon: Icon, photo, title, body }, i) => (
-            <li
-              key={title}
-              className="card group flex flex-col overflow-hidden transition-[transform,box-shadow] duration-300 hover:-translate-y-0.5 hover:shadow-[var(--shadow-lift)]"
-            >
-              <div className="relative aspect-[16/10] overflow-hidden bg-brand-tint">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={photo}
-                  alt=""
-                  width={640}
-                  height={400}
-                  loading="lazy"
-                  decoding="async"
-                  className="size-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
-                />
-                <span aria-hidden className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-ink/35 to-transparent" />
-                <span className="absolute right-3 top-3 rounded-full bg-white/90 px-2.5 py-1 text-xs font-bold text-ink shadow-sm backdrop-blur" aria-hidden>
-                  {String(i + 1).padStart(2, "0")}
-                </span>
-              </div>
-              <div className="relative flex flex-1 flex-col px-5 pb-5">
-                <span className="-mt-6 grid size-12 place-items-center rounded-xl bg-brand text-white shadow-md ring-4 ring-white transition-transform duration-300 group-hover:-translate-y-0.5">
-                  <Icon className="size-5" aria-hidden />
-                </span>
-                <h3 className="mt-3 text-base font-bold leading-snug">{title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-muted">{body}</p>
-              </div>
+        <ul className="mt-5 divide-y divide-line border-t border-line">
+          {rest.map((p) => (
+            <li key={p.slug}>
+              <PostRow post={p} />
             </li>
           ))}
-        </ol>
-      </section>
-
-      <section aria-labelledby="checklist-title" className="mt-12 grid gap-6 lg:grid-cols-[1.2fr_1fr]">
-        <div className="card p-6 sm:p-8">
-          <h2 id="checklist-title" className="section-title">Before you pay: a 30-second checklist</h2>
-          <ul className="mt-5 space-y-3">
-            {CHECKLIST.map((item) => (
-              <li key={item} className="flex items-start gap-3">
-                <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-brand" aria-hidden />
-                <span className="text-[15px] text-body">{item}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-        <div className="card flex flex-col justify-center bg-ink p-6 text-white sm:p-8">
-          <h2 className="text-2xl font-extrabold text-white">Ready to put it into practice?</h2>
-          <p className="mt-2 text-white/80">Browse today&apos;s verified codes and deals across every category.</p>
-          <div className="mt-6 flex flex-wrap gap-3">
-            <Link href="/deals" className="btn bg-white text-ink hover:bg-brand-tint">See best deals</Link>
-            <Link href="/stores" className="btn border border-white/30 text-white hover:bg-white/10">All stores</Link>
-          </div>
-        </div>
-      </section>
+        </ul>
+      </div>
     </div>
   );
 }
