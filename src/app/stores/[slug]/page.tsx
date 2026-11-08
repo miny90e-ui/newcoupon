@@ -177,8 +177,8 @@ export default async function StorePage({ params, searchParams }: Props) {
             )}
           </div>
 
-          {/* Every store with a live offer has a savings article; linking both ways passes visitors and ranking between them. */}
-          {offers.length > 0 && (
+          {/* Every store with a confirmed offer has a savings article; linking both ways passes visitors and ranking between them. */}
+          {offers.some((o) => o.discountLabel) && (
             <Link
               href={`/savings-tips/${savingsSlug(store.slug)}`}
               className="group mt-5 flex items-center gap-3 rounded-2xl bg-brand-tint p-3.5 ring-1 ring-brand/15 transition hover:ring-brand/40 sm:p-4"

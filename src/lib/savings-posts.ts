@@ -40,8 +40,10 @@ function dealExcerpt(reviews: ShopperReviews | undefined, code: string | null) {
 
 /** Every article, newest first in the order shown: the top-rated deals lead, the guides sit among them. */
 export async function savingsPosts(): Promise<SavingsPost[]> {
+  // The articles say the code was tried in the store's cart, so only offers whose discount was confirmed ("Giảm" filled) get one.
+  const tested = { ...liveCouponWhere(), discountLabel: { not: null } };
   const stores = await db.store.findMany({
-    where: { coupons: { some: liveCouponWhere() } },
+    where: { coupons: { some: tested } },
     select: {
       slug: true,
       name: true,
@@ -50,7 +52,7 @@ export async function savingsPosts(): Promise<SavingsPost[]> {
       website: true,
       affiliateUrl: true,
       coupons: {
-        where: liveCouponWhere(),
+        where: tested,
         select: { id: true, title: true, code: true, discountLabel: true, description: true },
         orderBy: [{ clicks: "desc" }, { updatedAt: "desc" }],
         take: 1,

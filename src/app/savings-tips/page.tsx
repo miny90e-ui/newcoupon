@@ -1,17 +1,27 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import { ArrowRight, BadgeCheck, RefreshCw, Sparkles, Star } from "lucide-react";
 import { savingsPosts } from "@/lib/savings-posts";
 import { reviewsChecked } from "@/components/shopper-reviews";
 import { FeaturedPost, Sticker } from "@/components/savings-post-card";
-import { SavingsGrid } from "@/components/savings-grid";
+import { SavingsGrid, savingsPage } from "@/components/savings-grid";
 import { cn } from "@/lib/utils";
 
-export const metadata: Metadata = {
-  title: "Savings Tips & Shopping Advice",
-  description: "Tested promo codes, real shopper ratings and simple habits that cut the price of what you buy online.",
-  alternates: { canonical: "/savings-tips" },
-};
+type Props = { searchParams: Promise<{ page?: string; topic?: string }> };
+
+const pageNumber = (page?: string) => Math.max(1, Math.floor(Number(page)) || 1);
+
+export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
+  const { page, topic } = await searchParams;
+  const n = pageNumber(page);
+  return {
+    title: n > 1 ? `Savings Tips & Shopping Advice — Page ${n}` : "Savings Tips & Shopping Advice",
+    description: "Tested promo codes, real shopper ratings and simple habits that cut the price of what you buy online.",
+    // Each page of the full list stands on its own; a topic view repeats those posts, so it points back to the list.
+    alternates: { canonical: !topic && n > 1 ? `/savings-tips?page=${n}` : "/savings-tips" },
+  };
+}
 
 // Three products from the top articles, fanned out on the header.
 const FAN = [
@@ -20,11 +30,14 @@ const FAN = [
   "z-0 -ml-6 size-28 rotate-6 lg:size-36",
 ];
 
-export default async function SavingsTipsPage() {
-  const posts = await savingsPosts();
+export default async function SavingsTipsPage({ searchParams }: Props) {
+  const [{ page: pageParam, topic }, posts] = await Promise.all([searchParams, savingsPosts()]);
+  const page = pageNumber(pageParam);
   // The top slot needs a photo; the first post that has one leads.
   const featured = posts.find((p) => p.image) ?? posts[0];
   const rest = posts.filter((p) => p !== featured);
+  const list = savingsPage(rest, topic, page);
+  if (page > list.pages) notFound();
   const deals = posts.filter((p) => p.kind === "deal");
   const fan = deals.filter((p) => p.thumb && p !== featured).slice(0, 3);
 
@@ -91,15 +104,22 @@ export default async function SavingsTipsPage() {
       <div className="relative bg-gradient-to-b from-brand-tint to-canvas pb-10 sm:pb-14">
         <div className="container-page">
           <div className="mx-auto max-w-5xl">
-            {featured && (
+            {featured && page === 1 && (
               <div className="relative -mt-10 sm:-mt-12">
                 <FeaturedPost post={featured} />
               </div>
             )}
 
-            <h2 className="mt-8 text-lg font-extrabold tracking-tight sm:text-xl">Latest tips & tested codes</h2>
+            <h2 id="latest" className="scroll-mt-20 pt-8 text-lg font-extrabold tracking-tight sm:scroll-mt-24 sm:text-xl">
+              Latest tips & tested codes
+              {list.pages > 1 && (
+                <span className="ml-2 text-sm font-semibold text-muted">
+                  Page {page} of {list.pages}
+                </span>
+              )}
+            </h2>
             <div className="mt-3">
-              <SavingsGrid posts={rest} />
+              <SavingsGrid list={list} page={page} />
             </div>
 
             <div className="relative mt-10 overflow-hidden rounded-3xl bg-gold px-5 py-6 sm:flex sm:items-center sm:justify-between sm:px-8">
