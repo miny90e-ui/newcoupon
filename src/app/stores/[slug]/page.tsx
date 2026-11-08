@@ -8,8 +8,9 @@ import { getSession } from "@/lib/session";
 import { shopItems } from "@/lib/store-showcase";
 import { STORE_INTROS } from "@/config/store-intros";
 import { SHOPPER_REVIEWS } from "@/config/shopper-reviews";
-import { savingsSlug, storeFaq, storeMeta } from "@/lib/seo";
-import { monthYear, siteUrl } from "@/lib/utils";
+import { STORE_FACTS } from "@/config/store-facts";
+import { savingsSlug, storeFaq, storeHeading, storeMeta } from "@/lib/seo";
+import { formatDate, monthYear, siteUrl } from "@/lib/utils";
 import { StoreLogo } from "@/components/store-logo";
 import { CouponRow } from "@/components/coupon-row";
 import { CouponReveal } from "@/components/coupon-reveal";
@@ -66,7 +67,8 @@ export default async function StorePage({ params, searchParams }: Props) {
     db.coupon.findMany({ where: { ...live, storeId: store.id }, select: offerSelect }),
   ]);
   const intro = STORE_INTROS[store.slug] ?? store.description;
-  const faq = storeFaq({ name: store.name, intro, offers, reviews: SHOPPER_REVIEWS[store.slug] });
+  const facts = STORE_FACTS[store.slug];
+  const faq = storeFaq({ name: store.name, intro, offers, reviews: SHOPPER_REVIEWS[store.slug], facts });
 
   const nCodes = counts.find((x) => x.type === "CODE")?._count ?? 0;
   const nDeals = counts.find((x) => x.type === "DEAL")?._count ?? 0;
@@ -118,10 +120,11 @@ export default async function StorePage({ params, searchParams }: Props) {
             {intro && <p className="mt-4 text-sm leading-relaxed text-body">{intro}</p>}
             {items.length > 0 && (
               <section aria-labelledby="best-sellers" className="mt-5 w-full text-left">
-                <h2 id="best-sellers" className="flex items-center gap-1.5 text-sm font-extrabold">
+                {/* A label, not a heading: this card comes before the H1 in the page, and the H1 should be its first heading. */}
+                <p id="best-sellers" className="flex items-center gap-1.5 text-sm font-extrabold">
                   <Flame className="size-4 text-brand" aria-hidden />
                   {store.name} best sellers
-                </h2>
+                </p>
                 {/* A strip to swipe on phones, a grid in the desktop sidebar. */}
                 <ul className="-mx-5 mt-2.5 flex snap-x gap-2.5 overflow-x-auto px-5 pb-1 [scrollbar-width:none] lg:mx-0 lg:grid lg:grid-cols-2 lg:overflow-visible lg:px-0">
                   {items.map((it) => (
@@ -146,7 +149,7 @@ export default async function StorePage({ params, searchParams }: Props) {
         </aside>
 
         <div className="min-w-0">
-          <h1 className="text-2xl font-extrabold tracking-tight sm:text-4xl">{store.name} Coupons &amp; Promo Codes</h1>
+          <h1 className="text-2xl font-extrabold tracking-tight sm:text-4xl">{storeHeading(store.name, offers)}</h1>
           <p className="mt-2 text-muted">
             {nCodes + nDeals} active offers · Updated {monthYear()}
           </p>
@@ -222,6 +225,11 @@ export default async function StorePage({ params, searchParams }: Props) {
                   </details>
                 ))}
               </div>
+              {facts && (
+                <p className="mt-2 text-xs text-muted">
+                  Shipping and return answers come from {store.name}&apos;s own policy pages, checked {formatDate(new Date(`${facts.checked}T12:00:00Z`))}.
+                </p>
+              )}
             </section>
           )}
 

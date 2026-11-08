@@ -32,7 +32,8 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
       where: { featured: true },
       include: { _count: { select: { coupons: { where: live } } } },
       orderBy: { name: "asc" },
-      take: 12,
+      // Every store page gets a link from the home page, the strongest page for Google; phones still show three rows.
+      take: 18,
     }),
     db.category.findMany({ orderBy: { sortOrder: "asc" }, take: 12, include: { _count: { select: { stores: true } } } }),
     getSavedIds(session?.userId),

@@ -1,16 +1,17 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, permanentRedirect } from "next/navigation";
-import { ArrowRight, BadgeCheck, CheckCircle2, Info, ListChecks, ListOrdered, type LucideIcon, Star, Wrench } from "lucide-react";
+import { ArrowRight, BadgeCheck, CheckCircle2, Gift, Info, ListChecks, ListOrdered, type LucideIcon, Star, Truck, Wrench } from "lucide-react";
 import { savingsPost, type SavingsPost } from "@/lib/savings-posts";
 import { CHECKLIST, TIPS, TROUBLESHOOT } from "@/config/savings-guides";
+import { STORE_FACTS, liveWays } from "@/config/store-facts";
 import { PostCard, PostImage, PostMeta, Sticker, TONE_CYCLE, postLabel, postTone } from "@/components/savings-post-card";
 import { ReviewSummary } from "@/components/shopper-reviews";
 import { CouponHowTo } from "@/components/coupon-how-to";
 import { CouponReveal } from "@/components/coupon-reveal";
 import { RevealTrigger } from "@/components/reveal-trigger";
 import { savingsSlug } from "@/lib/seo";
-import { SITE_NAME, cn, siteUrl } from "@/lib/utils";
+import { SITE_NAME, cn, formatDate, siteUrl } from "@/lib/utils";
 
 type Props = { params: Promise<{ slug: string }>; searchParams: Promise<{ c?: string }> };
 
@@ -90,6 +91,8 @@ function DealArticle({ post }: { post: SavingsPost }) {
   const { store, coupon, reviews } = post;
   if (!store || !coupon) return null;
   const tone = postTone(post);
+  const facts = STORE_FACTS[store.slug];
+  const ways = liveWays(facts);
   const words = post.offer ?? coupon.title;
   const offer = words.charAt(0).toLowerCase() + words.slice(1);
   const cta = coupon.code ? "Get Code" : "Get Deal";
@@ -151,6 +154,41 @@ function DealArticle({ post }: { post: SavingsPost }) {
       {coupon.description && (
         <Panel icon={Info} title="Good to know" className="bg-[#e6ecee]" iconClass="bg-ink text-white">
           <p className="text-[15px] leading-relaxed text-body">{coupon.description}</p>
+        </Panel>
+      )}
+
+      {ways.length > 0 && (
+        <Panel icon={Gift} title={`More ways to save at ${store.name}`} className="bg-[#fff7d6]" iconClass="bg-gold text-ink">
+          <ul className="grid gap-2 sm:grid-cols-2">
+            {ways.map((w) => (
+              <li key={w.title} className="rounded-xl bg-white/80 p-3 text-sm leading-relaxed text-body">
+                <strong className="block text-ink">{w.title}</strong>
+                {w.text}
+              </li>
+            ))}
+          </ul>
+        </Panel>
+      )}
+
+      {(facts?.shipping || facts?.returns) && (
+        <Panel icon={Truck} title={`${store.name} shipping and returns`} className="bg-[#e6ecee]" iconClass="bg-ink text-white">
+          <dl className="grid gap-2 text-sm leading-relaxed text-body">
+            {facts.shipping && (
+              <div className="rounded-xl bg-white/80 p-3">
+                <dt className="font-bold text-ink">Shipping</dt>
+                <dd>{facts.shipping}</dd>
+              </div>
+            )}
+            {facts.returns && (
+              <div className="rounded-xl bg-white/80 p-3">
+                <dt className="font-bold text-ink">Returns</dt>
+                <dd>{facts.returns}</dd>
+              </div>
+            )}
+          </dl>
+          <p className="mt-2 text-xs text-muted">
+            From {store.name}&apos;s own shipping and return policies, checked {formatDate(new Date(`${facts.checked}T12:00:00Z`))}.
+          </p>
         </Panel>
       )}
 

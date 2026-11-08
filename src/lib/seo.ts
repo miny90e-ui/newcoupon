@@ -1,4 +1,5 @@
 import type { ShopperReviews } from "@/config/shopper-reviews";
+import { liveWays, type StoreFacts } from "@/config/store-facts";
 
 // Search wording for store pages and their savings articles.
 // A store page answers "<store> promo code" (someone ready to buy); its article answers "how to save at <store>"
@@ -28,15 +29,20 @@ export function headlineOffer<T extends Offer>(offers: T[]): T | undefined {
 
 const isFreeShipping = (o: Offer) => /free ship/i.test(`${o.discountLabel} ${o.title}`);
 
+/** "Comenii Promo Code: 10% Off": the store page's keyword and its best discount, used as its H1 and to start its title. */
+export function storeHeading(name: string, offers: Offer[]) {
+  const top = headlineOffer(offers);
+  const words = top?.discountLabel ? labelWords(top.discountLabel) : null;
+  return words ? `${name} ${offers.some((o) => o.code) ? "Promo Code" : "Coupons"}: ${words}` : `${name} Coupons & Promo Codes`;
+}
+
 /** Title and description for a store page: keyword first, then the discount and the month, like the pages that rank for it. */
 export function storeMeta(name: string, offers: Offer[], month: string) {
   const top = headlineOffer(offers);
   const hasCode = offers.some((o) => o.code);
   const n = offers.length;
   const words = top?.discountLabel ? labelWords(top.discountLabel) : null;
-  const title = words
-    ? `${name} ${hasCode ? "Promo Code" : "Coupons"}: ${words} — ${month}`
-    : `${name} Coupons & Promo Codes — ${month}`;
+  const title = `${storeHeading(name, offers)} — ${month}`;
   const count = `${n} verified ${name} ${n === 1 ? "offer" : "offers"}`;
   // "Save $10 at X", "Get free shipping at X"
   const lead = !words ? "Save" : /\s+off$/i.test(words) ? `Save ${words.replace(/\s+off$/i, "")}` : `Get ${words.toLowerCase()}`;
@@ -51,19 +57,22 @@ export function storeMeta(name: string, offers: Offer[], month: string) {
 const rating = (r: number) => r.toFixed(Math.round(r * 100) % 10 ? 2 : 1);
 
 /**
- * The questions shoppers ask about a store (Google's "People also ask"), answered only with what we know:
- * the live offers, the shop's own products and the public ratings. A question we can't answer truthfully is left out.
+ * The questions shoppers ask about a store (Google's "People also ask" and suggestions), answered only with what we
+ * know: the live offers, the shop's own products, its own shipping and return policies and the public ratings.
+ * A question we can't answer truthfully is left out.
  */
 export function storeFaq({
   name,
   intro,
   offers,
   reviews,
+  facts,
 }: {
   name: string;
   intro: string | null;
   offers: Offer[];
   reviews: ShopperReviews | undefined;
+  facts?: StoreFacts;
 }) {
   const faq: { q: string; a: string }[] = [];
   const top = headlineOffer(offers);
@@ -87,6 +96,14 @@ export function storeFaq({
 
   const ship = offers.find(isFreeShipping);
   if (ship) faq.push({ q: `Does ${name} offer free shipping?`, a: `Yes: ${ship.title.charAt(0).toLowerCase() + ship.title.slice(1)}.` });
+  else if (facts?.shipping) {
+    faq.push({
+      q: /free/i.test(facts.shipping) ? `Does ${name} offer free shipping?` : `How does ${name} shipping work?`,
+      a: facts.shipping,
+    });
+  }
+
+  for (const w of liveWays(facts)) if (w.q) faq.push({ q: w.q, a: w.text });
 
   if (reviews?.sources.length) {
     const lines = reviews.sources.map((s) =>
@@ -96,6 +113,8 @@ export function storeFaq({
     );
     faq.push({ q: `How do shoppers rate ${name}?`, a: `${lines.join(", and ")}.${reviews.liked ? ` ${reviews.liked}` : ""}` });
   }
+
+  if (facts?.returns) faq.push({ q: `What is ${name}'s return policy?`, a: facts.returns });
 
   if (intro) faq.push({ q: `What does ${name} sell?`, a: intro });
 

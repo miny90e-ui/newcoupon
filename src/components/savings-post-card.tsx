@@ -53,7 +53,9 @@ export function PostImage({ post, wide, className }: { post: SavingsPost; wide?:
   const src = wide ? post.image : post.thumb;
   if (src) {
     // eslint-disable-next-line @next/next/no-img-element
-    return <img src={src} alt="" loading={wide ? "eager" : "lazy"} decoding="async" className={cn("object-cover", className)} />;
+    // The big photo on an article says what it shows; a card's thumbnail sits next to its own title.
+    const alt = wide && post.store ? `Products from ${post.store.name}` : "";
+    return <img src={src} alt={alt} loading={wide ? "eager" : "lazy"} decoding="async" className={cn("object-cover", className)} />;
   }
   return (
     <span className={cn("grid place-items-center bg-white p-3", className)}>

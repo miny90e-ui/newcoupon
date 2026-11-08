@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
 import { couponCardInclude, getSavedIds, liveCouponWhere } from "@/lib/queries";
 import { getSession } from "@/lib/session";
-import { monthYear } from "@/lib/utils";
+import { monthYear, siteUrl } from "@/lib/utils";
 import { CouponCard } from "@/components/coupon-card";
 import { CouponReveal } from "@/components/coupon-reveal";
 import { StoreTile } from "@/components/store-tile";
@@ -56,8 +56,18 @@ export default async function CategoryPage({ params, searchParams }: Props) {
     getSavedIds(session?.userId),
   ]);
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Categories", item: siteUrl("/categories") },
+      { "@type": "ListItem", position: 2, name: category.name, item: siteUrl(`/categories/${category.slug}`) },
+    ],
+  };
+
   return (
     <div className="container-page py-8">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <nav aria-label="Breadcrumb" className="text-sm text-muted">
         <Link href="/categories" className="hover:text-ink">Categories</Link> / <span className="text-ink">{category.name}</span>
       </nav>
@@ -66,7 +76,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
           <CategoryIcon name={category.icon} className="size-7" />
         </span>
         <div>
-          <h1 className="text-2xl font-extrabold tracking-tight sm:text-4xl">{category.name} Coupons &amp; Deals</h1>
+          <h1 className="text-2xl font-extrabold tracking-tight sm:text-4xl">{category.name} Coupons &amp; Promo Codes</h1>
           {category.description && <p className="mt-1 text-muted">{category.description}</p>}
         </div>
       </div>
