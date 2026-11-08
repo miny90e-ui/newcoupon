@@ -15,12 +15,12 @@ export type ReviewSource = {
 
 export type ShopperReviews = { sources: ReviewSource[]; liked?: string; disliked?: string };
 
-export const REVIEWS_CHECKED = "2026-11-06";
+export const REVIEWS_CHECKED = "2026-11-08";
 
 /** Keyed by store slug, in the order shown. */
 export const SHOPPER_REVIEWS: Record<string, ShopperReviews> = {
   watchdives: {
-    sources: [{ site: "Trustpilot", rating: 4.8, count: 410, url: "https://www.trustpilot.com/review/watchdives.com" }],
+    sources: [{ site: "Trustpilot", rating: 4.8, count: 413, url: "https://www.trustpilot.com/review/watchdives.com" }],
     liked: "Watches that feel well finished for the price, careful packaging and helpful support. The latest reviews are almost all 5-star.",
   },
   "my-cluck-hut": {
@@ -30,13 +30,13 @@ export const SHOPPER_REVIEWS: Record<string, ShopperReviews> = {
   jennibag: {
     sources: [
       { site: "Judge.me", rating: 4.86, count: 50879, url: "https://judge.me/reviews/stores/jennibag.com" },
-      { site: "Trustpilot", rating: 2.8, count: 414, url: "https://www.trustpilot.com/review/jennibag.com" },
+      { site: "Trustpilot", rating: 2.8, count: 415, url: "https://www.trustpilot.com/review/jennibag.com" },
     ],
     liked: "Fits under the seat as a personal item, so many travellers skip the carry-on fee.",
     disliked: "Recent Trustpilot reviews mention slow customer service and a zipper that broke early.",
   },
   "sodapup-true-dogs-llc": {
-    sources: [{ site: "Judge.me", rating: 4.86, count: 1046, url: "https://judge.me/reviews/stores/sodapup.com" }],
+    sources: [{ site: "Judge.me", rating: 4.86, count: 1048, url: "https://judge.me/reviews/stores/sodapup.com" }],
     liked: "Lick mats and slow-feeder trays, the best sellers, are rated 4.8 to 5 by buyers.",
   },
   comenii: {
@@ -85,9 +85,22 @@ export const SHOPPER_REVIEWS: Record<string, ShopperReviews> = {
   },
   trivita: {
     sources: [
-      { site: "trivita.com", product: "Nopalea", rating: 4.7, count: 167, url: "https://www.trivita.com/products/nopalea" },
-      { site: "trivita.com", product: "Slow Dissolve Super B-12", rating: 4.8, count: 66, url: "https://www.trivita.com/products/slow-dissolve-super-b-12" },
+      { site: "trivita.com", product: "Nopalea", rating: 4.7, count: 168, url: "https://www.trivita.com/products/nopalea" },
+      { site: "trivita.com", product: "Slow Dissolve Super B-12", rating: 4.9, count: 67, url: "https://www.trivita.com/products/slow-dissolve-super-b-12" },
     ],
+  },
+  "matcha-sunday": {
+    sources: [{ site: "Judge.me", rating: 4.89, count: 157, url: "https://judge.me/reviews/stores/matchasunday.com" }],
+    liked: "Buyers like the bright green colour and smooth, creamy taste, in drinks and in baking.",
+  },
+  "passion-4-health": {
+    sources: [{ site: "Judge.me", rating: 4.9, count: 1203, url: "https://judge.me/reviews/stores/passion4healthvitamins.com" }],
+    liked: "Long-time customers say the liquid multivitamin is easy to take and keep reordering it.",
+  },
+  fanttik: {
+    sources: [{ site: "Trustpilot", rating: 3.6, count: 144, url: "https://www.trustpilot.com/review/fanttik.com" }],
+    liked: "Well-made, reliable tools that are simple to use every day.",
+    disliked: "Several reviewers had slow order processing, late deliveries or parcels that never arrived.",
   },
 };
 
