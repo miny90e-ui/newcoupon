@@ -163,7 +163,8 @@ function DealArticle({ post }: { post: SavingsPost }) {
             {ways.map((w) => (
               <li key={w.title} className="rounded-xl bg-white/80 p-3 text-sm leading-relaxed text-body">
                 <strong className="block text-ink">{w.title}</strong>
-                {w.text}
+                {/* The text also answers a FAQ question ("Yes: students get 15% off"); here it stands on its own. */}
+                {w.text.replace(/^Yes: (.)/, (_, c: string) => c.toUpperCase())}
               </li>
             ))}
           </ul>
