@@ -36,7 +36,8 @@ const TAGS = [
 
 /** Home page title panel for the Black Friday season: night-black sale backdrop, gold accents, live countdown. */
 export function BlackFridayHero({ starts, ends, offers }: { starts: Date; ends: Date; offers: StoreSummary[] }) {
-  const day = starts.toLocaleDateString("en-US", { month: "short", day: "numeric", timeZone: "UTC" });
+  // With the year, Google no longer reads "Nov 27" as the page's date and guesses last year (it showed "Nov 27, 2025").
+  const day = starts.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" });
 
   return (
     <section className="container-page pt-4 sm:pt-6">
@@ -62,7 +63,7 @@ export function BlackFridayHero({ starts, ends, offers }: { starts: Date; ends: 
         <PriceTags offers={offers} />
 
         <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-2">
-          <p className="inline-flex items-center gap-1.5 rounded-full bg-gold px-3 py-1 text-xs font-extrabold uppercase tracking-wider text-night">
+          <p data-nosnippet className="inline-flex items-center gap-1.5 rounded-full bg-gold px-3 py-1 text-xs font-extrabold uppercase tracking-wider text-night">
             <Zap className="size-3.5 fill-current" aria-hidden /> Black Friday · {day}
           </p>
           <Countdown starts={starts.getTime()} ends={ends.getTime()} />

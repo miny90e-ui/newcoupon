@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { BadgeCheck, Gift, Tag } from "lucide-react";
 import { db } from "@/lib/db";
@@ -14,6 +15,9 @@ import { BrandCarousel } from "@/components/brand-carousel";
 import { BrandBanner } from "@/components/brand-banner";
 import { BlackFridayHero, blackFriday } from "@/components/black-friday-hero";
 import { CouponHowTo } from "@/components/coupon-how-to";
+
+// "/?c=<id>" (a revealed code) is the same page for Google.
+export const metadata: Metadata = { alternates: { canonical: "/" } };
 
 export default async function HomePage({ searchParams }: { searchParams: Promise<{ c?: string }> }) {
   const { c } = await searchParams;

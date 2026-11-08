@@ -37,6 +37,15 @@ function sheetRows(data: unknown[][] | undefined): Row[] {
   );
 }
 
+/**
+ * True when saving `data` would change `row`. The sheet is synced every 30 minutes, and rewriting
+ * unchanged rows would bump updatedAt each time, which is the sitemap's lastmod for Google.
+ */
+function differs(row: Record<string, unknown>, data: Record<string, unknown>) {
+  const plain = (v: unknown) => (v instanceof Date ? v.getTime() : v ?? null);
+  return Object.entries(data).some(([k, v]) => plain(row[k]) !== plain(v));
+}
+
 const yes = (v?: string) => ["1", "true", "yes", "y", "x", "có", "co"].includes((v ?? "").toLowerCase());
 
 /** Accepts 2026-12-31, 31/12/2026 or 31-12-2026; "Không thời hạn" / "No expiry" / "-" mean no end date. */
@@ -70,8 +79,10 @@ export async function applyStores(rows: Row[]) {
       featured: yes(r.featured),
       categoryId: cat?.id ?? null,
     };
-    const existing = await db.store.findUnique({ where: { slug }, select: { id: true } });
-    const saved = existing ? await db.store.update({ where: { slug }, data }) : await db.store.create({ data: { ...data, slug } });
+    const existing = await db.store.findUnique({ where: { slug } });
+    const saved = existing
+      ? differs(existing, data) ? await db.store.update({ where: { slug }, data }) : existing
+      : await db.store.create({ data: { ...data, slug } });
     if (existing) updated++; else created++;
     ids.push(saved.id);
   }
@@ -114,9 +125,10 @@ export async function applyCoupons(rows: Row[]) {
       where: code
         ? { storeId: store.id, code: { equals: code, mode: "insensitive" } }
         : { storeId: store.id, type: "DEAL", title: { equals: data.title, mode: "insensitive" } },
-      select: { id: true },
     });
-    const saved = existing ? await db.coupon.update({ where: { id: existing.id }, data }) : await db.coupon.create({ data });
+    const saved = existing
+      ? differs(existing, data) ? await db.coupon.update({ where: { id: existing.id }, data }) : existing
+      : await db.coupon.create({ data });
     if (existing) updated++; else created++;
     ids.push(saved.id);
   }
@@ -191,14 +203,14 @@ async function applyFlat(rows: Row[]) {
         ? categories.find((c) => c.slug === slugify(r.category) || c.name.toLowerCase() === r.category.toLowerCase())
         : undefined;
       if (r.category && !cat) errors.push(`Dòng ${line}: không có ngành hàng "${r.category}"`);
-      const select = { id: true, logoUrl: true, categoryId: true, description: true, website: true } as const;
+      const select = { id: true, name: true, affiliateUrl: true, logoUrl: true, categoryId: true, description: true, website: true } as const;
       // A store renamed in the sheet keeps its page, coupons and click counts: same shop link, same store.
       const host = shopHost(r.website || r.affiliate_url);
       const taken = new Set([...stores.values()].map((s) => s.id));
       const existing =
         (await db.store.findUnique({ where: { slug }, select })) ??
         (host
-          ? (await db.store.findMany({ select: { ...select, affiliateUrl: true } })).find(
+          ? (await db.store.findMany({ select })).find(
               (s) => !taken.has(s.id) && shopHost(s.website || s.affiliateUrl) === host
             )
           : undefined);
@@ -227,7 +239,7 @@ async function applyFlat(rows: Row[]) {
         }
       }
       const store = existing
-        ? await db.store.update({ where: { id: existing.id }, data })
+        ? differs(existing, data) ? await db.store.update({ where: { id: existing.id }, data }) : existing
         : await db.store.create({ data: { ...data, slug, featured: true } as Prisma.StoreUncheckedCreateInput });
       if (existing) storesUpdated++; else storesAdded++;
       stores.set(key, { id: store.id, link: r.affiliate_url });
