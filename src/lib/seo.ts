@@ -2,9 +2,12 @@ import type { ShopperReviews } from "@/config/shopper-reviews";
 import { liveWays, type StoreFacts } from "@/config/store-facts";
 
 // Search wording for store pages and their savings articles.
-// A store page answers "<store> promo code" (someone ready to buy); its article answers "how to save at <store>"
+// A store page answers "<store> discount code" (someone ready to buy); its article answers "how to save at <store>"
 // (someone still finding out). Promo code, coupon code and discount code mean the same thing to Google, so one
 // page per store targets all three and the article targets a different question, instead of both chasing one keyword.
+// The title and H1 lead with "Discount Code" because Keyword Planner (US) shows it is what most shoppers type
+// (watchdives 110 a month vs 20 for "promo code", jennibag 90 vs 10, fanttik 70 vs 30); the description and FAQ keep
+// "promo code" and "coupon code" so the page still matches those searches.
 
 type Offer = { code: string | null; discountLabel: string | null; title: string };
 
@@ -29,11 +32,11 @@ export function headlineOffer<T extends Offer>(offers: T[]): T | undefined {
 
 const isFreeShipping = (o: Offer) => /free ship/i.test(`${o.discountLabel} ${o.title}`);
 
-/** "Comenii Promo Code: 10% Off": the store page's keyword and its best discount, used as its H1 and to start its title. */
+/** "Comenii Discount Code: 10% Off": the store page's keyword and its best discount, used as its H1 and to start its title. */
 export function storeHeading(name: string, offers: Offer[]) {
   const top = headlineOffer(offers);
   const words = top?.discountLabel ? labelWords(top.discountLabel) : null;
-  return words ? `${name} ${offers.some((o) => o.code) ? "Promo Code" : "Coupons"}: ${words}` : `${name} Coupons & Promo Codes`;
+  return words ? `${name} ${offers.some((o) => o.code) ? "Discount Code" : "Coupons"}: ${words}` : `${name} Discount Codes & Coupons`;
 }
 
 /** Title and description for a store page: keyword first, then the discount and the month, like the pages that rank for it. */
