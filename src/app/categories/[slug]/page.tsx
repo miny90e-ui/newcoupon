@@ -16,7 +16,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const cat = await db.category.findUnique({
     where: { slug },
-    select: { name: true, stores: { select: { name: true }, orderBy: { featured: "desc" }, take: 4 } },
+    select: { name: true, stores: { where: listedStoreWhere, select: { name: true }, orderBy: { featured: "desc" }, take: 4 } },
   });
   if (!cat) return {};
   // Naming the stores lets the description match searches for them, not only for the category.

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { db } from "@/lib/db";
+import { listedStoreWhere } from "@/lib/queries";
 import { CategoryCard } from "@/components/category-card";
 
 export const metadata: Metadata = {
@@ -11,7 +12,7 @@ export const metadata: Metadata = {
 export default async function CategoriesPage() {
   const categories = await db.category.findMany({
     orderBy: { sortOrder: "asc" },
-    include: { _count: { select: { stores: true } } },
+    include: { _count: { select: { stores: { where: listedStoreWhere } } } },
   });
   return (
     <div className="container-page py-10">

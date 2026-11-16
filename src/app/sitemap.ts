@@ -9,7 +9,8 @@ export const dynamic = "force-dynamic";
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [stores, categories, posts] = await Promise.all([
     db.store.findMany({ where: listedStoreWhere, select: { slug: true, updatedAt: true } }),
-    db.category.findMany({ select: { slug: true } }),
+    // A category with no store to show would be an empty page.
+    db.category.findMany({ where: { stores: { some: listedStoreWhere } }, select: { slug: true } }),
     savingsPosts(),
   ]);
   const staticPages = ["", "/stores", "/categories", "/deals", "/savings-tips", "/about", "/contact", "/disclosure", "/privacy", "/terms"];

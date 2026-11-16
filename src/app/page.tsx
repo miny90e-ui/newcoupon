@@ -35,7 +35,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
       // Every store page gets a link from the home page, the strongest page for Google; phones still show three rows.
       take: 18,
     }),
-    db.category.findMany({ orderBy: { sortOrder: "asc" }, take: 12, include: { _count: { select: { stores: true } } } }),
+    db.category.findMany({ orderBy: { sortOrder: "asc" }, take: 12, include: { _count: { select: { stores: { where: listedStoreWhere } } } } }),
     getSavedIds(session?.userId),
     storeSummaries(),
     topBrands(5),
