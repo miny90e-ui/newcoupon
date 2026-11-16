@@ -2,7 +2,7 @@ import "server-only";
 import { db } from "./db";
 import { liveCouponWhere } from "./queries";
 import { brandShowcases } from "./store-showcase";
-import { savingsSlug } from "./seo";
+import { labelWords, savingsSlug } from "./seo";
 import { GUIDES } from "@/config/savings-guides";
 import { REVIEWS_CHECKED, SHOPPER_REVIEWS, type ShopperReviews } from "@/config/shopper-reviews";
 
@@ -70,11 +70,13 @@ export async function savingsPosts(): Promise<SavingsPost[]> {
       const reviews = SHOPPER_REVIEWS[store.slug];
       const show = showcases.get(store.slug);
       const offer = coupon.title.replace(/\s+with code\s+\S+$/i, "");
+      // An offer that is only the label ("10% OFF", when the sheet's offer text is blank) reads "10% Off Your Fanttik Order".
+      const headline = offer.toLowerCase() === coupon.discountLabel?.toLowerCase() ? `${labelWords(offer)} Your ${store.name} Order` : titleCase(offer);
       return {
         // "How to save at X", not "X promo code": the store page already targets the promo code search (see lib/seo.ts).
         slug: savingsSlug(store.slug),
         kind: "deal",
-        title: `How to Save at ${store.name}: ${titleCase(offer)}`,
+        title: `How to Save at ${store.name}: ${headline}`,
         excerpt: dealExcerpt(reviews, coupon.code),
         date: REVIEWS_CHECKED,
         image: show?.backdrop ?? null,

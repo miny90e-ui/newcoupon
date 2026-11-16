@@ -23,6 +23,14 @@ export type StoreFacts = {
 };
 
 export const STORE_FACTS: Record<string, StoreFacts> = {
+  "6am-nutrition": {
+    checked: "2026-11-16",
+    shipping:
+      "Shipping is free on orders of $55 or more (after discounts); smaller orders pay the USPS Priority rate shown at checkout. Orders ship by the next business day and can take 7–10 days to arrive.",
+    returns:
+      "6AM Run's money-back guarantee: take a product daily for at least two weeks, and if it doesn't work for you, contact 6AM Run within 30 days of the order date for a refund plus a $10 gift card, without sending anything back.",
+    ways: [{ title: "Build a bundle", text: "6AM Run's Build a Bundle page lets you pack several of its products together to save." }],
+  },
   "americas-favorite-toffee": {
     checked: "2026-11-08",
     returns: "Toffee is perishable, so Dave's Sweet Tooth doesn't take returns; gift cards can't be returned either.",
@@ -62,6 +70,14 @@ export const STORE_FACTS: Record<string, StoreFacts> = {
       "US shipping, Alaska and Hawaii included, is free on orders over $30 and $5 below that. DrLeo ships to the US and Mexico only; orders leave in 1–3 business days and arrive in 5–10.",
     returns: "You have 30 days after delivery to ask for a return. The buyer pays return shipping unless the item is faulty, damaged or wrong.",
     ways: [{ title: "Sets and Hot Sale", text: "DrLeo sells skincare sets, and its Hot Sale collection lists marked-down products." }],
+  },
+  "fang-nyc": {
+    checked: "2026-11-16",
+    shipping:
+      "Orders to the US, Canada, Mexico and the UK ship free over $150 and cost $10 below that, arriving in 2–8 business days. Worldwide express shipping is free over $250 and $15 below that. Orders are processed in 1–3 business days.",
+    returns:
+      "Unworn items with their tags can be returned within 14 days of the ship date, after emailing FANG first; underwear, swimwear and sale items can't be returned. In the US, FANG sends a return label and takes its cost out of the refund.",
+    ways: [{ title: "Sale", text: "FANG NYC keeps a Sale collection, and select styles were 20% off when we checked." }],
   },
   fanttik: {
     checked: "2026-11-08",
@@ -103,6 +119,25 @@ export const STORE_FACTS: Record<string, StoreFacts> = {
     returns: "Undamaged items can be returned or exchanged within 30 days of purchase, and the buyer pays return shipping.",
     ways: [{ title: "Email list", text: "JenniBag's newsletter sends subscriber-only offers." }],
   },
+  "litlookz-studio": {
+    checked: "2026-11-16",
+    shipping:
+      "Shipping costs $4.90 and is free on orders over $65. Delivery takes 3–8 business days to the US and Canada and 3–11 to the UK and Europe.",
+    returns:
+      "Unworn items with their tags, in the original packaging, can be returned within 30 days of the order date; email Litlookz Studio first and it sends a return label. Damaged or faulty items can be returned free.",
+    ways: [{ title: "Sale and price picks", text: "Litlookz Studio has a Sale section and lets you shop by price, from $20 & Under to $40 & Under." }],
+  },
+  lovful: {
+    checked: "2026-11-16",
+    shipping:
+      "US standard shipping is free on orders of $50 or more and $5 below that; express shipping (3–5 business days) is $25, free from $150. Each set is handmade, so allow 3–5 business days before it ships.",
+    returns:
+      "Wrong, faulty or late orders are refunded or replaced within 30 days of delivery. A lost or ill-fitting nail can be replaced free with your next order or bought for $3 a piece, and orders can be changed or cancelled free within 24 hours.",
+    ways: [
+      { title: "New customer offer", text: "Lovful's own site offers new customers 20% off a first order with code WELCOME20." },
+      { title: "Sale collections", text: "Lovful sorts marked-down sets into 40% off and 60% off collections." },
+    ],
+  },
   "maestri-house": {
     checked: "2026-11-08",
     shipping: "Shipping is free on orders over $19.99 in the continental US, and delivery usually takes 2–5 business days.",
@@ -116,6 +151,13 @@ export const STORE_FACTS: Record<string, StoreFacts> = {
       { title: "Subscribe and save", text: "Matcha subscriptions renew at 5% off and can be skipped or cancelled at any time." },
       { title: "Sets and bundles", text: "Matcha Sunday also sells matcha kits, sets and powder bundles." },
     ],
+  },
+  mewcats: {
+    checked: "2026-11-16",
+    shipping:
+      "Shipping is free to more than 200 countries, with no extra customs or duty charges. In-stock orders leave within 1–3 days; free shipping takes 20–40 business days and standard shipping 7–15.",
+    returns:
+      "Unused items in their original packaging can be returned within 30 days of purchase, after emailing Mewcats; sale items, custom products and gift cards can't be returned. An order cancelled before it ships is refunded minus a 5% fee.",
   },
   "my-cluck-hut": {
     checked: "2026-11-08",
@@ -143,6 +185,22 @@ export const STORE_FACTS: Record<string, StoreFacts> = {
     ways: [
       { title: "Subscribe and save", text: "The liquid multivitamin can be bought on Subscribe & Save, a delivery subscription." },
       { title: "Wellness Pack", text: "Passion 4 Health also sells its products together as the Wellness Pack bundle." },
+    ],
+  },
+  skymd: {
+    checked: "2026-11-16",
+    shipping:
+      "SkyMD ships within the US only, from Wisconsin. Orders over $35 ship free; below that, UPS standard shipping (3–5 business days) is $5.95 and USPS Priority (1–3 business days) is $14.95.",
+    returns:
+      "Anything bought on tryskymd.com can be returned within 30 days of purchase for a refund or store credit, and a flavor can be swapped for another of equal value.",
+    ways: [
+      {
+        title: "Military and first responder discount",
+        q: "Does SkyMD have a military or first responder discount?",
+        text: "Yes: current and former US military, their spouses and dependents, and first responders get 30% off after verifying with GovX ID.",
+      },
+      { title: "Subscribe and save", text: "A subscription takes 20% off every recurring order and ships free; deliveries can be swapped, paused or cancelled." },
+      { title: "SkyMD Rewards", text: "Members get 50 points for signing up and earn points on every order, redeemable for discounts at checkout." },
     ],
   },
   "sodapup-true-dogs-llc": {
