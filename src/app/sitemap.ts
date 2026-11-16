@@ -2,12 +2,13 @@ import type { MetadataRoute } from "next";
 import { db } from "@/lib/db";
 import { siteUrl } from "@/lib/utils";
 import { savingsPosts } from "@/lib/savings-posts";
+import { listedStoreWhere } from "@/lib/queries";
 
 export const dynamic = "force-dynamic";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [stores, categories, posts] = await Promise.all([
-    db.store.findMany({ select: { slug: true, updatedAt: true } }),
+    db.store.findMany({ where: listedStoreWhere, select: { slug: true, updatedAt: true } }),
     db.category.findMany({ select: { slug: true } }),
     savingsPosts(),
   ]);

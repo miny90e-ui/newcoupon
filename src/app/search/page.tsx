@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { db } from "@/lib/db";
-import { couponCardInclude, getSavedIds, liveCouponWhere } from "@/lib/queries";
+import { couponCardInclude, getSavedIds, listedStoreWhere, liveCouponWhere } from "@/lib/queries";
 import { getSession } from "@/lib/session";
 import { CouponCard } from "@/components/coupon-card";
 import { CouponReveal } from "@/components/coupon-reveal";
@@ -19,7 +19,7 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
   const [stores, coupons, saved] = query
     ? await Promise.all([
         db.store.findMany({
-          where: { OR: [{ name: contains }, { category: { name: contains } }] },
+          where: { AND: [listedStoreWhere, { OR: [{ name: contains }, { category: { name: contains } }] }] },
           include: { _count: { select: { coupons: { where: live } } } },
           take: 12,
           orderBy: { featured: "desc" },

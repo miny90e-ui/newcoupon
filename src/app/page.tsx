@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { BadgeCheck, Gift, Tag } from "lucide-react";
 import { db } from "@/lib/db";
-import { couponCardInclude, getSavedIds, liveCouponWhere, storeSummaries, topBrands, type StoreSummary } from "@/lib/queries";
+import { couponCardInclude, getSavedIds, listedStoreWhere, liveCouponWhere, storeSummaries, topBrands, type StoreSummary } from "@/lib/queries";
 import { getSession } from "@/lib/session";
 import { SITE_NAME, safeHref, siteUrl } from "@/lib/utils";
 import { HeroCarousel } from "@/components/hero-carousel";
@@ -29,7 +29,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
     db.coupon.findMany({ where: { ...live, featured: true }, include: couponCardInclude, orderBy: { updatedAt: "desc" }, take: 10 }),
     db.coupon.findMany({ where: live, include: couponCardInclude, orderBy: { createdAt: "desc" }, take: 8 }),
     db.store.findMany({
-      where: { featured: true },
+      where: { featured: true, ...listedStoreWhere },
       include: { _count: { select: { coupons: { where: live } } } },
       orderBy: { name: "asc" },
       // Every store page gets a link from the home page, the strongest page for Google; phones still show three rows.

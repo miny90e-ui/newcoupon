@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowRight, BookOpen, ChevronDown, Flame } from "lucide-react";
 import { db } from "@/lib/db";
-import { couponCardInclude, getSavedIds, liveCouponWhere } from "@/lib/queries";
+import { couponCardInclude, getSavedIds, listedStoreWhere, liveCouponWhere } from "@/lib/queries";
 import { getSession } from "@/lib/session";
 import { shopItems } from "@/lib/store-showcase";
 import { STORE_INTROS } from "@/config/store-intros";
@@ -22,8 +22,8 @@ const offerSelect = { code: true, discountLabel: true, title: true } as const;
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const store = await db.store.findUnique({
-    where: { slug },
+  const store = await db.store.findFirst({
+    where: { slug, ...listedStoreWhere },
     select: { name: true, coupons: { where: liveCouponWhere(), select: offerSelect } },
   });
   if (!store) return {};
@@ -38,7 +38,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function StorePage({ params, searchParams }: Props) {
   const [{ slug }, { c, type }] = await Promise.all([params, searchParams]);
-  const store = await db.store.findUnique({ where: { slug }, include: { category: true } });
+  const store = await db.store.findFirst({ where: { slug, ...listedStoreWhere }, include: { category: true } });
   if (!store) notFound();
 
   const session = await getSession();
@@ -58,7 +58,7 @@ export default async function StorePage({ params, searchParams }: Props) {
       take: 5,
     }),
     store.categoryId
-      ? db.store.findMany({ where: { categoryId: store.categoryId, NOT: { id: store.id } }, take: 6, orderBy: { featured: "desc" } })
+      ? db.store.findMany({ where: { categoryId: store.categoryId, NOT: { id: store.id }, ...listedStoreWhere }, take: 6, orderBy: { featured: "desc" } })
       : Promise.resolve([]),
     getSavedIds(session?.userId),
     db.coupon.groupBy({ by: ["type"], where: { ...live, storeId: store.id }, _count: true }),

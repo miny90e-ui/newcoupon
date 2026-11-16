@@ -13,6 +13,14 @@ export function liveCouponWhere(): Prisma.CouponWhereInput {
   };
 }
 
+/**
+ * Stores the site shows. Switching off every row of a store in the sheet ("Hiện" = no) hides the store everywhere,
+ * its page included; a store whose coupons have only expired, or that has none yet, still shows.
+ */
+export const listedStoreWhere = {
+  OR: [{ coupons: { none: {} } }, { coupons: { some: { active: true } } }],
+} satisfies Prisma.StoreWhereInput;
+
 export const couponCardInclude = {
   store: { select: { id: true, name: true, slug: true, logoUrl: true } },
 } satisfies Prisma.CouponInclude;
@@ -38,6 +46,7 @@ export type StoreSummary = {
 export async function storeSummaries(): Promise<StoreSummary[]> {
   const live = liveCouponWhere();
   const rows = await db.store.findMany({
+    where: listedStoreWhere,
     select: {
       name: true,
       slug: true,

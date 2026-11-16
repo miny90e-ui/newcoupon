@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
-import { couponCardInclude, getSavedIds, liveCouponWhere } from "@/lib/queries";
+import { couponCardInclude, getSavedIds, listedStoreWhere, liveCouponWhere } from "@/lib/queries";
 import { getSession } from "@/lib/session";
 import { monthYear, siteUrl } from "@/lib/utils";
 import { CouponCard } from "@/components/coupon-card";
@@ -49,7 +49,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
       take: 40,
     }),
     db.store.findMany({
-      where: { categoryId: category.id },
+      where: { categoryId: category.id, ...listedStoreWhere },
       include: { _count: { select: { coupons: { where: live } } } },
       orderBy: [{ featured: "desc" }, { name: "asc" }],
     }),
