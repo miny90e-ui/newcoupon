@@ -46,6 +46,14 @@ export const STORE_FACTS: Record<string, StoreFacts> = {
       { title: "ATK Rewards", text: "ATK runs its own rewards program, ATK Rewards." },
     ],
   },
+  boldr: {
+    checked: "2026-11-19",
+    shipping:
+      "Boldr ships worldwide by FedEx, DHL or an economy international service, and each Kelvin heater comes with the right plug and voltage for the delivery address. The shipping fee depends on the address and the order value and is shown at checkout.",
+    returns:
+      "You can ask for a refund within 30 days of delivery by emailing Boldr's support. Items must be resaleable and in their original packaging; US buyers get a prepaid return label, while buyers elsewhere pay to send the item to Boldr's nearest warehouse. Custom items can't be returned unless faulty.",
+    ways: [{ title: "Newsletter", text: "Boldr's newsletter sign-up, at the bottom of its site, promises subscribers exclusive deals." }],
+  },
   comenii: {
     checked: "2026-11-08",
     shipping:
