@@ -97,11 +97,6 @@ export const SHOPPER_REVIEWS: Record<string, ShopperReviews> = {
     sources: [{ site: "Judge.me", rating: 4.9, count: 1211, url: "https://judge.me/reviews/stores/passion4healthvitamins.com" }],
     liked: "Long-time customers say the liquid multivitamin is easy to take and keep reordering it.",
   },
-  fanttik: {
-    sources: [{ site: "Trustpilot", rating: 3.6, count: 144, url: "https://www.trustpilot.com/review/fanttik.com" }],
-    liked: "Well-made, reliable tools that are simple to use every day.",
-    disliked: "Several reviewers had slow order processing, late deliveries or parcels that never arrived.",
-  },
   lovful: {
     sources: [
       { site: "Judge.me", rating: 4.91, count: 2015, url: "https://judge.me/reviews/stores/lovful.com" },
