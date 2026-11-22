@@ -51,6 +51,8 @@ export const STORE_INTROS: Record<string, string> = {
     "Ododos makes activewear: high-waisted yoga leggings and capris with pockets, soft loungewear, and performance tees and tanks for men and women.",
   "passion-4-health":
     "Passion 4 Health makes liquid vitamins: a daily liquid multivitamin and minerals, a hair, skin and nails formula, an eye care formula and a D3, K2 and Omega-3 blend, also sold together as the Wellness Pack.",
+  "pj-paul-jones":
+    "PJ Paul Jones sells menswear: blazers and suit coats, knitted polo shirts, cardigans and pullover sweaters, plus casual and dress shirts, suit vests, a few pants and leather dress shoes.",
   skymd:
     "SkyMD makes electrolyte drink mixes in four formulas, Daily Hydration, Hydration + Energy, Hydration + Creatine and Hydration + Immunity, plus bottles, tumblers and hats.",
   "sodapup-true-dogs-llc":

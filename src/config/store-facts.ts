@@ -239,6 +239,18 @@ export const STORE_FACTS: Record<string, StoreFacts> = {
       { title: "Wellness Pack", text: "Passion 4 Health also sells its products together as the Wellness Pack bundle." },
     ],
   },
+  "pj-paul-jones": {
+    checked: "2026-11-22",
+    shipping:
+      "US shipping is free on orders over $79.99 and $7.99 below that. Orders are prepared in 1–2 business days (some take up to a week, depending on stock), then standard shipping to the US takes about 6–8 business days.",
+    returns:
+      "Returns have to be started within 30 days of receiving the order, and items must be unworn and unwashed. The buyer pays return shipping unless the item is faulty, and returns go to PJ Paul Jones in China. For hygiene reasons, tops and briefs are only refunded if they're visibly defective.",
+    ways: [
+      { title: "Buy 2, save on the second", text: "When we checked on November 22, PJ Paul Jones' banner offered 30% off the second item when you buy two." },
+      { title: "Clearance", text: "PJ Paul Jones keeps a Clearance collection of marked-down styles." },
+      { title: "Bulk orders", text: "For corporate and bulk orders, PJ Paul Jones offers wholesale pricing that rises with quantity; email the store with the number you need." },
+    ],
+  },
   skymd: {
     checked: "2026-11-16",
     shipping:
