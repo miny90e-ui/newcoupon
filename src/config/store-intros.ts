@@ -49,6 +49,8 @@ export const STORE_INTROS: Record<string, string> = {
     "Ocoopa makes rechargeable electric hand warmers in compact, pocket-size designs; many also work as a power bank for charging a phone.",
   ododos:
     "Ododos makes activewear: high-waisted yoga leggings and capris with pockets, soft loungewear, and performance tees and tanks for men and women.",
+  "official-tymo-beauty":
+    "TYMO makes heated hair styling tools: hot air brushes, straightening brushes, flat irons, curling irons, cordless curlers and hair dryers, plus hair care like heat protectant spray, hair oil and shampoo powder, and brushes and clips.",
   "passion-4-health":
     "Passion 4 Health makes liquid vitamins: a daily liquid multivitamin and minerals, a hair, skin and nails formula, an eye care formula and a D3, K2 and Omega-3 blend, also sold together as the Wellness Pack.",
   "pj-paul-jones":

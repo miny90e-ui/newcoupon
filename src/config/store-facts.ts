@@ -230,6 +230,18 @@ export const STORE_FACTS: Record<string, StoreFacts> = {
       { title: "Sale", text: "Ododos keeps a Sale collection of marked-down activewear." },
     ],
   },
+  "official-tymo-beauty": {
+    checked: "2026-11-25",
+    shipping:
+      "Standard US shipping is free on orders of $76.99 or more after discounts and $7.95 below that, taking about 5–7 business days; express shipping (3–5 business days) costs extra. Alaska, Hawaii and Puerto Rico pay by weight, and TYMO can't ship to P.O. boxes.",
+    returns:
+      "US orders can be returned within 30 days of purchase for an exchange, store credit or a refund, if the item is in good condition and in its original packaging; email TYMO's support first. The buyer pays return shipping. Gift cards, hair care items, accessories, free gifts and final-sale items can't be returned.",
+    ways: [
+      { title: "Education discount", text: "College students with a .edu email address can verify it on TYMO's Education Program page to get a 25% off code by email; it can't be combined with other codes." },
+      { title: "TYMO Rewards", text: "Members earn points on every dollar spent and 1,000 points on their birthday; 1,000 points take $10 off an order over $50. Higher tiers, reached by yearly spending, earn points faster." },
+      { title: "Free gift on bigger orders", text: "When we checked on November 25, TYMO's banner offered a free mystery box on orders of $130 or more." },
+    ],
+  },
   "passion-4-health": {
     checked: "2026-11-08",
     shipping: "Orders take 2–3 business days to process. International buyers pay any customs and duties.",
